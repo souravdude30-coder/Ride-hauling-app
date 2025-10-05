@@ -5,6 +5,8 @@ import Header from "./components/Header";
 import BookingForm from "./components/BookingForm";
 import RideOptions from "./components/RideOptions";
 import RideTracking from "./components/RideTracking";
+import ShuttleBooking from "./components/ShuttleBooking";
+import ShuttleTracking from "./components/ShuttleTracking";
 import { Toaster } from "./components/ui/toaster";
 
 const Home = () => {
