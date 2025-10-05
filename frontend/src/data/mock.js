@@ -217,7 +217,7 @@ export const mockRides = [
     to: "Market St Office",
     driver: "David Chen", 
     fare: 8.95,
-    type: "Uber Shuttle",
+    type: "Uber Share",
     status: "completed"
   },
   {
