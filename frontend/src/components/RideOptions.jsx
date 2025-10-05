@@ -55,7 +55,7 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
                   </div>
                   <div className="text-sm text-gray-600 flex items-center space-x-3">
                     <span>{rideType.description}</span>
-                    {rideType.id === 'shuttle' && (
+                    {rideType.id === 'ubershare' && (
                       <Badge variant="outline" className="text-xs">
                         <Users className="w-3 h-3 mr-1" />
                         Shared
