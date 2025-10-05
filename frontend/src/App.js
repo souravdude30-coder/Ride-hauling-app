@@ -56,6 +56,12 @@ const Home = () => {
               onRideComplete={handleRideComplete}
             />
           )}
+          {currentScreen === 'shuttle' && (
+            <ShuttleBooking onBack={handleBack} />
+          )}
+          {currentScreen === 'shuttle-tracking' && (
+            <ShuttleTracking onBack={handleBack} />
+          )}
         </div>
         
         {currentScreen === 'booking' && (
