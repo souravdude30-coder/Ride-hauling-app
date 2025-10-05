@@ -59,6 +59,17 @@ export const mockRideTypes = [
     icon: "🚗"
   },
   {
+    id: "ubershare",
+    name: "Uber Share",
+    description: "Shared rides along popular routes",
+    capacity: 6,
+    eta: "8 min", 
+    price: 6.99,
+    surge: false,
+    icon: "🚐",
+    savings: "40% cheaper"
+  },
+  {
     id: "comfort",
     name: "Comfort",
     description: "Newer cars with extra legroom",
