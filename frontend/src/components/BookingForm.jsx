@@ -1,0 +1,151 @@
+import React, { useState } from 'react';
+import { MapPin, Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { mockLocations } from '../data/mock';
+
+const BookingForm = ({ onBookRide }) => {
+  const [pickup, setPickup] = useState('');
+  const [destination, setDestination] = useState('');
+  const [date, setDate] = useState('Today');
+  const [time, setTime] = useState('Now');
+  const [showSuggestions, setShowSuggestions] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (pickup && destination) {
+      onBookRide({ pickup, destination, date, time });
+    }
+  };
+
+  const getSuggestions = (query) => {
+    if (!query) return [];
+    return mockLocations.filter(location =>
+      location.name.toLowerCase().includes(query.toLowerCase()) ||
+      location.address.toLowerCase().includes(query.toLowerCase())
+    );
+  };
+
+  const handleLocationSelect = (location, type) => {
+    if (type === 'pickup') {
+      setPickup(location.name);
+    } else {
+      setDestination(location.name);
+    }
+    setShowSuggestions('');
+  };
+
+  return (
+    <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+      <h1 className="text-4xl font-bold text-gray-900 mb-8">
+        Go anywhere with<br />Uber
+      </h1>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative">
+          <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg focus-within:border-black transition-colors">
+            <MapPin className="w-5 h-5 text-gray-600" />
+            <Input
+              placeholder="Pickup location"
+              value={pickup}
+              onChange={(e) => {
+                setPickup(e.target.value);
+                setShowSuggestions('pickup');
+              }}
+              className="border-0 p-0 focus:ring-0 bg-transparent"
+            />
+          </div>
+          
+          {showSuggestions === 'pickup' && pickup && (
+            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+              {getSuggestions(pickup).map((location) => (
+                <button
+                  key={location.id}
+                  type="button"
+                  onClick={() => handleLocationSelect(location, 'pickup')}
+                  className="w-full text-left p-3 hover:bg-gray-50 transition-colors border-b last:border-b-0"
+                >
+                  <div className="font-medium">{location.name}</div>
+                  <div className="text-sm text-gray-600">{location.address}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="relative">
+          <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg focus-within:border-black transition-colors">
+            <div className="w-2 h-2 bg-black rounded-full"></div>
+            <Input
+              placeholder="Destination"
+              value={destination}
+              onChange={(e) => {
+                setDestination(e.target.value);
+                setShowSuggestions('destination');
+              }}
+              className="border-0 p-0 focus:ring-0 bg-transparent"
+            />
+          </div>
+          
+          {showSuggestions === 'destination' && destination && (
+            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+              {getSuggestions(destination).map((location) => (
+                <button
+                  key={location.id}
+                  type="button" 
+                  onClick={() => handleLocationSelect(location, 'destination')}
+                  className="w-full text-left p-3 hover:bg-gray-50 transition-colors border-b last:border-b-0"
+                >
+                  <div className="font-medium">{location.name}</div>
+                  <div className="text-sm text-gray-600">{location.address}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg">
+            <Calendar className="w-5 h-5 text-gray-600" />
+            <select 
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="border-0 bg-transparent focus:outline-none w-full"
+            >
+              <option>Today</option>
+              <option>Tomorrow</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg">
+            <Clock className="w-5 h-5 text-gray-600" />
+            <select
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="border-0 bg-transparent focus:outline-none w-full"
+            >
+              <option>Now</option>
+              <option>In 15 min</option>
+              <option>In 30 min</option>
+              <option>In 1 hour</option>
+            </select>
+          </div>
+        </div>
+
+        <Button 
+          type="submit"
+          className="w-full bg-black text-white hover:bg-gray-800 py-3 rounded-lg font-medium transition-colors"
+          disabled={!pickup || !destination}
+        >
+          See prices
+        </Button>
+      </form>
+
+      <div className="mt-6 text-sm text-gray-600">
+        <a href="#" className="hover:underline">Log in to see your recent activity</a>
+      </div>
+    </div>
+  );
+};
+
+export default BookingForm;
