@@ -260,7 +260,7 @@ export const mockCurrentRide = {
   id: "ride_current",
   status: "driver_assigned", // booking, driver_assigned, driver_arriving, in_progress, completed
   driver: mockDrivers[0],
-  rideType: mockRideTypes[1], // Shuttle
+  rideType: mockRideTypes[1], // Uber Share
   pickup: {
     address: "123 Main St, San Francisco, CA",
     coordinates: { lat: 37.7749, lng: -122.4194 }
