@@ -88,9 +88,9 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
               </div>
             </div>
             
-            {rideType.id === 'shuttle' && (
+            {rideType.id === 'ubershare' && (
               <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-800">
-                <div className="font-medium">🚐 Shuttle Info:</div>
+                <div className="font-medium">🚐 Uber Share Info:</div>
                 <div>Share your ride with other passengers going your way. Pickup spots may be a short walk from your location.</div>
               </div>
             )}
