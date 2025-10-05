@@ -59,17 +59,6 @@ export const mockRideTypes = [
     icon: "🚗"
   },
   {
-    id: "shuttle",
-    name: "Uber Shuttle",
-    description: "Shared rides along popular routes",
-    capacity: 6,
-    eta: "8 min", 
-    price: 6.99,
-    surge: false,
-    icon: "🚐",
-    savings: "40% cheaper"
-  },
-  {
     id: "comfort",
     name: "Comfort",
     description: "Newer cars with extra legroom",
@@ -90,6 +79,84 @@ export const mockRideTypes = [
     surgeMultiplier: 1.2,
     icon: "🚗"
   }
+];
+
+export const mockShuttleRoutes = [
+  {
+    id: "route_1",
+    name: "Gurgaon - Delhi Route",
+    description: "Daily office commute",
+    duration: "45-60 min",
+    distance: "28 km",
+    price: 150,
+    pickupHotspots: [
+      { id: "p1", name: "DLF Phase 1", address: "DLF Phase 1, Gurgaon", time: "7:30 AM" },
+      { id: "p2", name: "Cyber Hub", address: "Cyber Hub, Gurgaon", time: "7:45 AM" },
+      { id: "p3", name: "MG Road Metro", address: "MG Road Metro Station", time: "8:00 AM" }
+    ],
+    dropHotspots: [
+      { id: "d1", name: "Connaught Place", address: "Connaught Place, Delhi", time: "9:15 AM" },
+      { id: "d2", name: "Rajiv Chowk Metro", address: "Rajiv Chowk Metro Station", time: "9:30 AM" },
+      { id: "d3", name: "Khan Market", address: "Khan Market, Delhi", time: "9:45 AM" }
+    ],
+    capacity: 45,
+    amenities: ["AC", "WiFi", "USB Charging", "Live Tracking"],
+    frequency: "Every 15 minutes",
+    operatingHours: "6:00 AM - 11:00 PM"
+  },
+  {
+    id: "route_2", 
+    name: "Noida - CP Route",
+    description: "Express route to Central Delhi",
+    duration: "35-45 min",
+    distance: "22 km",
+    price: 120,
+    pickupHotspots: [
+      { id: "p4", name: "Sector 18 Metro", address: "Sector 18 Metro, Noida", time: "8:00 AM" },
+      { id: "p5", name: "Botanical Garden", address: "Botanical Garden Metro", time: "8:15 AM" },
+      { id: "p6", name: "Okhla Phase 1", address: "Okhla Phase 1 Metro", time: "8:30 AM" }
+    ],
+    dropHotspots: [
+      { id: "d4", name: "Connaught Place", address: "Connaught Place, Delhi", time: "9:15 AM" },
+      { id: "d5", name: "Barakhamba Road", address: "Barakhamba Road Metro", time: "9:25 AM" }
+    ],
+    capacity: 45,
+    amenities: ["AC", "WiFi", "USB Charging", "Live Tracking"],
+    frequency: "Every 20 minutes",
+    operatingHours: "6:30 AM - 10:30 PM"
+  },
+  {
+    id: "route_3",
+    name: "Mumbai - Andheri to BKC",
+    description: "Bandra Kurla Complex commute",
+    duration: "25-35 min", 
+    distance: "15 km",
+    price: 80,
+    pickupHotspots: [
+      { id: "p7", name: "Andheri East Metro", address: "Andheri East Metro Station", time: "8:30 AM" },
+      { id: "p8", name: "Powai", address: "Powai Bus Depot", time: "8:45 AM" },
+      { id: "p9", name: "Vikhroli Station", address: "Vikhroli Railway Station", time: "9:00 AM" }
+    ],
+    dropHotspots: [
+      { id: "d6", name: "BKC Bus Hub", address: "Bandra Kurla Complex", time: "9:30 AM" },
+      { id: "d7", name: "Kurla Station", address: "Kurla Railway Station", time: "9:45 AM" }
+    ],
+    capacity: 40,
+    amenities: ["AC", "WiFi", "USB Charging", "Live Tracking"],
+    frequency: "Every 12 minutes",
+    operatingHours: "7:00 AM - 10:00 PM"
+  }
+];
+
+export const mockShuttleTimeSlots = [
+  { id: "slot_1", time: "7:30 AM", availableSeats: 12, totalSeats: 45 },
+  { id: "slot_2", time: "8:00 AM", availableSeats: 3, totalSeats: 45 },
+  { id: "slot_3", time: "8:30 AM", availableSeats: 18, totalSeats: 45 },
+  { id: "slot_4", time: "9:00 AM", availableSeats: 25, totalSeats: 45 },
+  { id: "slot_5", time: "9:30 AM", availableSeats: 30, totalSeats: 45 },
+  { id: "slot_6", time: "6:00 PM", availableSeats: 15, totalSeats: 45 },
+  { id: "slot_7", time: "6:30 PM", availableSeats: 8, totalSeats: 45 },
+  { id: "slot_8", time: "7:00 PM", availableSeats: 22, totalSeats: 45 }
 ];
 
 export const mockLocations = [
