@@ -1,38 +1,101 @@
-import { useEffect } from "react";
-import "@/App.css";
+import React, { useState } from "react";
+import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import Header from "./components/Header";
+import BookingForm from "./components/BookingForm";
+import RideOptions from "./components/RideOptions";
+import RideTracking from "./components/RideTracking";
+import { Toaster } from "./components/ui/toaster";
 
 const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
+  const [currentScreen, setCurrentScreen] = useState('booking'); // booking, options, tracking
+  const [bookingDetails, setBookingDetails] = useState(null);
+  const [selectedRide, setSelectedRide] = useState(null);
+
+  const handleBookRide = (details) => {
+    setBookingDetails(details);
+    setCurrentScreen('options');
   };
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
+  const handleSelectRide = (rideType) => {
+    setSelectedRide(rideType);
+    setCurrentScreen('tracking');
+  };
+
+  const handleBack = () => {
+    setCurrentScreen('booking');
+  };
+
+  const handleRideComplete = () => {
+    // Reset to booking screen after ride completion
+    setTimeout(() => {
+      setCurrentScreen('booking');
+      setBookingDetails(null);
+      setSelectedRide(null);
+    }, 3000);
+  };
 
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      
+      <main className="flex items-center justify-between max-w-7xl mx-auto px-6 py-12">
+        <div className="flex-1">
+          {currentScreen === 'booking' && (
+            <BookingForm onBookRide={handleBookRide} />
+          )}
+          {currentScreen === 'options' && (
+            <RideOptions 
+              bookingDetails={bookingDetails}
+              onSelectRide={handleSelectRide}
+              onBack={handleBack}
+            />
+          )}
+          {currentScreen === 'tracking' && (
+            <RideTracking 
+              onRideComplete={handleRideComplete}
+            />
+          )}
+        </div>
+        
+        {currentScreen === 'booking' && (
+          <div className="hidden lg:block flex-1 ml-12">
+            <img 
+              src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+              alt="Uber ride illustration"
+              className="w-full h-96 object-cover rounded-lg"
+            />
+          </div>
+        )}
+      </main>
+
+      {/* Services section */}
+      {currentScreen === 'booking' && (
+        <section className="max-w-7xl mx-auto px-6 py-16">
+          <h2 className="text-2xl font-bold mb-8">Suggestions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <div className="text-4xl mb-4">🚗</div>
+              <h3 className="text-lg font-semibold mb-2">Ride</h3>
+              <p className="text-gray-600 text-sm">Go anywhere with Uber. Request a ride, hop in, and go.</p>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <div className="text-4xl mb-4">🕒</div>
+              <h3 className="text-lg font-semibold mb-2">Reserve</h3>
+              <p className="text-gray-600 text-sm">Reserve your ride in advance so you can relax on the day of your trip.</p>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <div className="text-4xl mb-4">🚐</div>
+              <h3 className="text-lg font-semibold mb-2">Shuttle</h3>
+              <p className="text-gray-600 text-sm">Share your ride along popular routes. Save money while meeting new people.</p>
+            </div>
+          </div>
+        </section>
+      )}
+      
+      <Toaster />
     </div>
   );
 };
