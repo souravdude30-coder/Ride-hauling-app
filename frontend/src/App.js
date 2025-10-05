@@ -81,7 +81,7 @@ const Home = () => {
       {currentScreen === 'booking' && (
         <section className="max-w-7xl mx-auto px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">Suggestions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="text-4xl mb-4">🚗</div>
               <h3 className="text-lg font-semibold mb-2">Ride</h3>
@@ -93,12 +93,18 @@ const Home = () => {
               <h3 className="text-lg font-semibold mb-2">Reserve</h3>
               <p className="text-gray-600 text-sm">Reserve your ride in advance so you can relax on the day of your trip.</p>
             </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <div className="text-4xl mb-4">🚐</div>
+              <h3 className="text-lg font-semibold mb-2">Share</h3>
+              <p className="text-gray-600 text-sm">Share your ride with others going your way. Save money on every trip.</p>
+            </div>
             
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                  onClick={() => setCurrentScreen('shuttle')}>
               <div className="text-4xl mb-4">🚌</div>
               <h3 className="text-lg font-semibold mb-2">Shuttle</h3>
-              <p className="text-gray-600 text-small">Book daily commute shuttles. Fixed routes, AC buses, advance booking up to 7 days.</p>
+              <p className="text-gray-600 text-sm">Book daily commute shuttles. Fixed routes, AC buses, advance booking up to 7 days.</p>
             </div>
           </div>
         </section>
