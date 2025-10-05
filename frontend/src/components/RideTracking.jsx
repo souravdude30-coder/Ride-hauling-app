@@ -158,8 +158,8 @@ const RideTracking = ({ ride = mockCurrentRide, onRideComplete }) => {
             </div>
           </div>
 
-          {/* Shuttle specific info */}
-          {ride.rideType.id === 'shuttle' && ride.passengers && (
+          {/* Uber Share specific info */}
+          {ride.rideType.id === 'ubershare' && ride.passengers && (
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
                 <Users className="w-4 h-4 text-blue-600" />
