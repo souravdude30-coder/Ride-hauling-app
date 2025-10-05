@@ -94,10 +94,11 @@ const Home = () => {
               <p className="text-gray-600 text-sm">Reserve your ride in advance so you can relax on the day of your trip.</p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                 onClick={() => setCurrentScreen('shuttle')}>
               <div className="text-4xl mb-4">🚐</div>
               <h3 className="text-lg font-semibold mb-2">Shuttle</h3>
-              <p className="text-gray-600 text-sm">Share your ride along popular routes. Save money while meeting new people.</p>
+              <p className="text-gray-600 text-sm">Book daily commute shuttles. Fixed routes, AC buses, advance booking up to 7 days.</p>
             </div>
           </div>
         </section>
