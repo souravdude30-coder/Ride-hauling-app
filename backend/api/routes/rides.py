@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
-from ...models.ride import Ride, RideRequest, RideUpdate, RideEstimate, RideType, RideStatus
-from ...services.osm_service import osm_service
-from ...database import db
+from models.ride import Ride, RideRequest, RideUpdate, RideEstimate, RideType, RideStatus
+from services.osm_service import osm_service
+from database import db
 import random
 import asyncio
 from datetime import datetime, timedelta
