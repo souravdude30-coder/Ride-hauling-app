@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
-from ...models.shuttle import ShuttleRoute, ShuttleBooking, ShuttleBookingRequest, ShuttleSchedule, ShuttleBus, ShuttleStatus
-from ...database import db
+from models.shuttle import ShuttleRoute, ShuttleBooking, ShuttleBookingRequest, ShuttleSchedule, ShuttleBus, ShuttleStatus
+from database import db
 from datetime import datetime, time, timedelta
 import random
 
