@@ -10,6 +10,11 @@ from typing import List
 import uuid
 from datetime import datetime
 
+# Import API routes
+from api.routes.locations import router as locations_router
+from api.routes.rides import router as rides_router
+from api.routes.drivers import router as drivers_router
+from api.routes.shuttles import router as shuttles_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -20,11 +25,14 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(
+    title="Uber Clone API",
+    description="Complete Uber clone with OpenStreetMap integration",
+    version="1.0.0"
+)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
-
 
 # Define Models
 class StatusCheck(BaseModel):
@@ -35,10 +43,20 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-# Add your routes to the router instead of directly to app
+# Basic routes
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {
+        "message": "Uber Clone API with OpenStreetMap Integration",
+        "version": "1.0.0",
+        "features": [
+            "Location search and geocoding",
+            "Ride booking and tracking", 
+            "Driver management",
+            "Shuttle service (India style)",
+            "Real-time routing with OSRM"
+        ]
+    }
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
@@ -51,6 +69,12 @@ async def create_status_check(input: StatusCheckCreate):
 async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
+
+# Include feature routers
+api_router.include_router(locations_router)
+api_router.include_router(rides_router)
+api_router.include_router(drivers_router)
+api_router.include_router(shuttles_router)
 
 # Include the router in the main app
 app.include_router(api_router)
