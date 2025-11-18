@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
-from ...services.osm_service import osm_service
+from services.osm_service import osm_service
 import logging
 
 logger = logging.getLogger(__name__)
