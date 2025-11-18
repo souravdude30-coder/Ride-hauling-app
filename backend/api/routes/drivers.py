@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
-from ...models.driver import DriverProfile, DriverCreate, DriverLocationUpdate, DriverStatusUpdate
-from ...models.ride import RideStatus
-from ...database import db
+from models.driver import DriverProfile, DriverCreate, DriverLocationUpdate, DriverStatusUpdate
+from models.ride import RideStatus
+from database import db
 from datetime import datetime
 import random
 
