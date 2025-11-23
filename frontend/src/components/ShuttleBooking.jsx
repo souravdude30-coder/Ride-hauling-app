@@ -181,7 +181,7 @@ const ShuttleBooking = ({ onBack }) => {
                      onClick={() => setSelectedDrop(drop)}>
                   <div className="font-medium text-gray-900">{drop.name}</div>
                   <div className="text-sm text-gray-600">{drop.address}</div>
-                  <div className="text-xs text-red-600 font-medium mt-1">Arrival: {drop.time}</div>
+                  <div className="text-xs text-red-600 font-medium mt-1">Arrival: {drop.drop_time}</div>
                 </div>
               ))}
             </div>
