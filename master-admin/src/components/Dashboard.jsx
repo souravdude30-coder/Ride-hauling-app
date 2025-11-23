@@ -84,7 +84,7 @@ const Dashboard = ({ user }) => {
             <div className="text-4xl">👥</div>
           </div>
           <div className="mt-2 text-sm text-green-600">↗ +12% from last month</div>
-        </Card>
+        </div>
 
         <div className="p-6 bg-white rounded-lg shadow">
           <div className="flex items-center justify-between">
@@ -95,7 +95,7 @@ const Dashboard = ({ user }) => {
             <div className="text-4xl">🏢</div>
           </div>
           <div className="mt-2 text-sm text-green-600">↗ +8% from last month</div>
-        </Card>
+        </div>
 
         <div className="p-6 bg-white rounded-lg shadow">
           <div className="flex items-center justify-between">
@@ -106,7 +106,7 @@ const Dashboard = ({ user }) => {
             <div className="text-4xl">🚗</div>
           </div>
           <div className="mt-2 text-sm text-blue-600">→ Stable</div>
-        </Card>
+        </div>
 
         <div className="p-6 bg-white rounded-lg shadow">
           <div className="flex items-center justify-between">
@@ -117,7 +117,7 @@ const Dashboard = ({ user }) => {
             <div className="text-4xl">💰</div>
           </div>
           <div className="mt-2 text-sm text-green-600">↗ +15% from last month</div>
-        </Card>
+        </div>
       </div>
 
       {/* Real-time Stats */}
@@ -142,7 +142,7 @@ const Dashboard = ({ user }) => {
               <Badge className="bg-blue-100 text-blue-800">2,847</Badge>
             </div>
           </div>
-        </Card>
+        </div>
 
         <div className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Live Operations</h3>
@@ -164,7 +164,7 @@ const Dashboard = ({ user }) => {
               <span className="text-lg font-semibold text-red-600">2</span>
             </div>
           </div>
-        </Card>
+        </div>
 
         <div className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
@@ -182,7 +182,7 @@ const Dashboard = ({ user }) => {
               ⚙️ System Maintenance
             </button>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Recent Activity and Alerts */}
@@ -200,7 +200,7 @@ const Dashboard = ({ user }) => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
         <div className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">System Alerts</h3>
@@ -212,7 +212,7 @@ const Dashboard = ({ user }) => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
