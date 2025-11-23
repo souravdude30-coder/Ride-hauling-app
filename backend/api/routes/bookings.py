@@ -136,8 +136,8 @@ async def verify_otp(
             raise HTTPException(status_code=400, detail="Invalid OTP")
         
         return {
-            \"success\": True,
-            \"message\": \"Booking verified successfully\"
+            "success": True,
+            "message": "Booking verified successfully"
         }
         
     except HTTPException:
