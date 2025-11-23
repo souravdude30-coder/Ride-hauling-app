@@ -87,7 +87,7 @@ class RBACService:
         # Update last login
         await db.users.update_one(
             {"email": email},
-            {"$set": {"last_login": datetime.utcnow()}}
+            {"$set": {"last_login": datetime.now(timezone.utc)}}
         )
         
         # Create JWT token
