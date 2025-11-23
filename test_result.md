@@ -182,15 +182,18 @@ backend:
   
   - task: "Subscription Plans & Pass Management"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/services/pass_service.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Pass system complete with 6 default plans (Daily ₹100, Weekly ₹600, Monthly Basic ₹1500, Monthly Premium ₹2500, Quarterly ₹6500, Annual ₹25000). Each journey consumes 1 pass. Bulk purchase for corporate admins. Routes: GET /api/passes/plans, POST /api/passes/plans, GET /api/passes/my-passes, GET /api/passes/{id}, POST /api/passes/bulk-purchase"
+      - working: true
+        agent: "testing"
+        comment: "✅ SUBSCRIPTION PLANS & PASS MANAGEMENT FULLY WORKING: All 6 subscription plans available with correct fields (name, type, validity_days, number_of_passes, price). Pass purchase integration with payment gateway working. User passes retrieval working. Fixed timezone comparison issues in pass expiry validation. Bulk pass purchase for corporate admins working (₹4500 for 3 monthly basic passes). Pass consumption during booking working correctly."
   
   - task: "Booking System with QR & OTP"
     implemented: true
