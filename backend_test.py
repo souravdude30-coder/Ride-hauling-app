@@ -628,7 +628,7 @@ class PaymentBookingTestSuite:
 
 async def main():
     """Main test runner"""
-    test_suite = AuthTestSuite()
+    test_suite = PaymentBookingTestSuite()
     success = await test_suite.run_all_tests()
     
     # Exit with appropriate code
