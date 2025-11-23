@@ -139,7 +139,7 @@ const Dashboard = ({ user }) => {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Active Connections</span>
-              <Badge className="bg-blue-100 text-blue-800">2,847</Badge>
+              <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800">2,847</span>
             </div>
           </div>
         </div>
