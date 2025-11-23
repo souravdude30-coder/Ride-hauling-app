@@ -25,8 +25,10 @@ def calculate_fare(distance_km: float, duration_minutes: int, ride_type: RideTyp
     
     return round(fare, 2)
 
+from models.estimate import RideEstimateRequest
+
 @router.post("/estimate")
-async def get_ride_estimates(request: RideRequest):
+async def get_ride_estimates(request: RideEstimateRequest):
     """
     Get ride estimates for different ride types
     """
