@@ -199,6 +199,36 @@ const Home = () => {
       {currentScreen === 'share' && (
         <UberShare onBack={() => setCurrentScreen('home')} />
       )}
+      {currentScreen === 'bike' && (
+        <BikeBooking onBack={() => setCurrentScreen('home')} />
+      )}
+      {currentScreen === 'toto' && (
+        <TotoBooking onBack={() => setCurrentScreen('home')} />
+      )}
+      {currentScreen === 'delivery' && (
+        <DeliveryBooking onBack={() => setCurrentScreen('home')} />
+      )}
+      {currentScreen === 'rentals' && (
+        <div className="p-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">🚙 Car Rentals</h2>
+          <p className="text-gray-600">Coming Soon! Rent cars by the hour or day.</p>
+          <Button onClick={() => setCurrentScreen('home')} className="mt-4">Go Back</Button>
+        </div>
+      )}
+      {currentScreen === 'intercity' && (
+        <div className="p-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">🚗 Intercity Rides</h2>
+          <p className="text-gray-600">Coming Soon! Long distance travel between cities.</p>
+          <Button onClick={() => setCurrentScreen('home')} className="mt-4">Go Back</Button>
+        </div>
+      )}
+      {currentScreen === 'store' && (
+        <div className="p-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">🏪 Store Pickup</h2>
+          <p className="text-gray-600">Coming Soon! Pickup from stores and restaurants.</p>
+          <Button onClick={() => setCurrentScreen('home')} className="mt-4">Go Back</Button>
+        </div>
+      )}
       
       <Toaster />
     </div>
