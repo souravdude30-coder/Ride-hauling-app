@@ -243,5 +243,5 @@ async def create_bulk_booking(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f\"Error creating bulk booking: {str(e)}\")
+        logger.error(f"Error creating bulk booking: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
