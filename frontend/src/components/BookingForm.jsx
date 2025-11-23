@@ -41,6 +41,34 @@ const BookingForm = ({ onBookRide }) => {
     return [];
   };
 
+  const [suggestions, setSuggestions] = useState([]);
+
+  const fetchSuggestions = async (query) => {
+    if (!query) {
+      setSuggestions([]);
+      return;
+    }
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/locations/search?q=${encodeURIComponent(query)}&limit=5`);
+      const data = await response.json();
+      if (data.success) {
+        setSuggestions(data.data.map(location => ({
+          id: location.id,
+          name: location.name,
+          address: location.address
+        })));
+      }
+    } catch (error) {
+      console.error('Failed to fetch locations:', error);
+      // Fallback to mock data
+      const mockSuggestions = mockLocations.filter(location =>
+        location.name.toLowerCase().includes(query.toLowerCase()) ||
+        location.address.toLowerCase().includes(query.toLowerCase())
+      );
+      setSuggestions(mockSuggestions);
+    }
+  };
+
   const handleLocationSelect = (location, type) => {
     if (type === 'pickup') {
       setPickup(location.name);
@@ -48,6 +76,7 @@ const BookingForm = ({ onBookRide }) => {
       setDestination(location.name);
     }
     setShowSuggestions('');
+    setSuggestions([]);
   };
 
   return (
