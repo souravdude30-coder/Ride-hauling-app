@@ -97,8 +97,13 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
         {/* Ride Options */}
         <div>
 
-      <div className="space-y-3">
-        {mockRideTypes.map((rideType) => (
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="text-lg">Loading ride options...</div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {(rideEstimates.length > 0 ? rideEstimates : mockRideTypes).map((rideType) => (
           <div 
             key={rideType.id}
             onClick={() => handleRideSelect(rideType)}
