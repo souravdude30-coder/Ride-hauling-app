@@ -5,10 +5,11 @@ import jwt
 import hashlib
 from datetime import datetime, timedelta, timezone
 import os
-from passlib.context import CryptContext
+import hashlib
+import base64
+import bcrypt
 
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+# Direct bcrypt implementation to avoid passlib issues
 
 class RBACService:
     def __init__(self):
