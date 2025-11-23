@@ -197,15 +197,18 @@ backend:
   
   - task: "Booking System with QR & OTP"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/services/booking_service.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Booking system complete with QR code generation (single-use) and 6-digit OTP for verification. Routes: POST /api/bookings/create, GET /api/bookings/my-bookings, GET /api/bookings/{id}, POST /api/bookings/verify-otp, POST /api/bookings/verify-qr, POST /api/bookings/{id}/complete, POST /api/bookings/bulk-booking"
+      - working: true
+        agent: "testing"
+        comment: "✅ BOOKING SYSTEM WITH QR & OTP FULLY FUNCTIONAL: Fixed timezone-aware datetime issues in booking creation. Booking creation with pass consumption working (6-digit OTP generated, base64 QR code created). Driver OTP verification working correctly. Driver QR code verification working with booking status change to 'active'. Booking completion by driver working. Bulk booking for corporate admins working (₹2000 for 2-day 10-capacity booking). All booking endpoints returning proper responses."
 
 frontend:
   - task: "Master Admin App Authentication"
