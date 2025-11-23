@@ -175,7 +175,7 @@ async def verify_qr(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f\"Error verifying QR: {str(e)}\")
+        logger.error(f"Error verifying QR: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post(\"/{booking_id}/complete\")
