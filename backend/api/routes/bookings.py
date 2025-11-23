@@ -146,7 +146,7 @@ async def verify_otp(
         logger.error(f"Error verifying OTP: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post(\"/verify-qr\")
+@router.post("/verify-qr")
 async def verify_qr(
     request: VerifyQRRequest,
     current_user: User = Depends(get_current_user)
