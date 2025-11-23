@@ -27,7 +27,7 @@ const Home = () => {
   };
 
   const handleBack = () => {
-    setCurrentScreen('booking');
+    setCurrentScreen('home');
   };
 
   const handleRideComplete = () => {
