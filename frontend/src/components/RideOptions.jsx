@@ -53,7 +53,7 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+    <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center mb-6">
         <Button variant="ghost" size="sm" onClick={onBack} className="mr-3 p-1">
           <ChevronLeft className="w-5 h-5" />
@@ -61,14 +61,41 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
         <h2 className="text-xl font-semibold">Choose a ride</h2>
       </div>
 
-      <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-        <div className="text-sm text-gray-600 mb-1">
-          {bookingDetails.pickup} → {bookingDetails.destination}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Route Map */}
+        <div>
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+            <div className="text-sm text-gray-600 mb-1">
+              {bookingDetails.pickup} → {bookingDetails.destination}
+            </div>
+            <div className="text-xs text-gray-500">
+              {bookingDetails.date} • {bookingDetails.time}
+            </div>
+            {routeData && (
+              <div className="text-xs text-blue-600 mt-1">
+                Distance: {routeData.distance_km} km • Duration: ~{routeData.duration_minutes} min
+              </div>
+            )}
+          </div>
+          
+          <MapView
+            pickup={{
+              lat: 37.7749,
+              lon: -122.4194, 
+              address: bookingDetails.pickup
+            }}
+            destination={{
+              lat: 37.7849,
+              lon: -122.4094,
+              address: bookingDetails.destination
+            }}
+            route={routeData}
+            className="h-80 w-full rounded-lg border"
+          />
         </div>
-        <div className="text-xs text-gray-500">
-          {bookingDetails.date} • {bookingDetails.time}
-        </div>
-      </div>
+
+        {/* Ride Options */}
+        <div>
 
       <div className="space-y-3">
         {mockRideTypes.map((rideType) => (
