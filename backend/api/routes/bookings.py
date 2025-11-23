@@ -235,9 +235,9 @@ async def create_bulk_booking(
         )
         
         return {
-            \"success\": True,
-            \"bulk_booking\": bulk_booking.dict(),
-            \"total_amount\": total_amount
+            "success": True,
+            "bulk_booking": bulk_booking.dict(),
+            "total_amount": total_amount
         }
         
     except HTTPException:
