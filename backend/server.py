@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime
 
 # Import API routes
+from api.routes.auth import router as auth_router
 from api.routes.locations import router as locations_router
 from api.routes.rides import router as rides_router
 from api.routes.drivers import router as drivers_router
