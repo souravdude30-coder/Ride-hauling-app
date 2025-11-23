@@ -16,7 +16,7 @@ const ShuttleBooking = ({ onBack }) => {
   const [loading, setLoading] = useState(true);
 
   // Fetch shuttle routes on component mount
-  useState(() => {
+  useEffect(() => {
     const fetchRoutes = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/shuttles/routes`);
