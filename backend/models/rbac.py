@@ -152,10 +152,11 @@ class User(BaseModel):
     role: UserRole
     company_id: Optional[str] = None  # For corporate users
     permissions: Set[Permission] = Field(default_factory=set)
+    password_hash: Optional[str] = None  # Not returned in API responses
     is_active: bool = True
     last_login: Optional[datetime] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
     def has_permission(self, permission: Permission) -> bool:
         """Check if user has specific permission"""
