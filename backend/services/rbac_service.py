@@ -97,7 +97,7 @@ class RBACService:
             "role": user_data["role"],
             "company_id": user_data.get("company_id"),
             "permissions": user_data["permissions"],
-            "exp": datetime.utcnow() + timedelta(hours=24)
+            "exp": datetime.now(timezone.utc) + timedelta(hours=24)
         }
         
         token = jwt.encode(payload, self.secret_key, algorithm="HS256")
