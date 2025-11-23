@@ -7,6 +7,9 @@ import MapView from './MapView';
 
 const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
   const [selectedRide, setSelectedRide] = useState(null);
+  const [rideEstimates, setRideEstimates] = useState([]);
+  const [routeData, setRouteData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const handleRideSelect = (rideType) => {
     setSelectedRide(rideType);
