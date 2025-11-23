@@ -127,7 +127,7 @@ const Dashboard = ({ user }) => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm">API Response Time</span>
-              <Badge className="bg-green-100 text-green-800">45ms</Badge>
+              <span className="px-2 py-1 text-xs rounded bg-green-100 text-green-800">45ms</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Database Performance</span>
