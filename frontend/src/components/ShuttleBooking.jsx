@@ -3,7 +3,7 @@ import { ChevronLeft, MapPin, Clock, Users, Wifi, Zap, Calendar } from 'lucide-r
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
-import { mockShuttleRoutes, mockShuttleTimeSlots } from '../data/mock';
+import { mockShuttleTimeSlots } from '../data/mock';
 
 const ShuttleBooking = ({ onBack }) => {
   const [selectedRoute, setSelectedRoute] = useState(null);
