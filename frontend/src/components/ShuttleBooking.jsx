@@ -156,7 +156,7 @@ const ShuttleBooking = ({ onBack }) => {
           <div>
             <h3 className="font-semibold mb-3 text-green-600">📍 Pickup Points</h3>
             <div className="space-y-3">
-              {selectedRoute.pickupHotspots.map((pickup) => (
+              {(selectedRoute.pickup_hotspots || []).map((pickup) => (
                 <div key={pickup.id} 
                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                        selectedPickup?.id === pickup.id ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'
