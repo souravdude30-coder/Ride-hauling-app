@@ -75,36 +75,58 @@ class PaymentBookingTestSuite:
         except Exception as e:
             return False, {"error": str(e)}, 0
     
-    async def test_user_registration(self):
-        """Test 1: User Registration"""
-        test_data = {
-            "email": "testuser@test.com",
-            "password": "Test@123",
-            "name": "Test User",
-            "role": "passenger"
-        }
+    async def login_user(self, email: str, password: str) -> Optional[str]:
+        """Helper method to login and get token"""
+        test_data = {"email": email, "password": password}
         
         success, response, status = await self.make_request(
-            "POST", "/auth/register", test_data, expect_status=200
+            "POST", "/auth/login", test_data, expect_status=200
+        )
+        
+        if success and "access_token" in response:
+            return response["access_token"]
+        return None
+    
+    async def test_subscription_plans(self):
+        """Test 1: Get Subscription Plans"""
+        success, response, status = await self.make_request(
+            "GET", "/passes/plans", expect_status=200
         )
         
         if success:
-            # Check response structure
-            required_fields = ["id", "email", "name", "role", "permissions", "is_active"]
-            missing_fields = [field for field in required_fields if field not in response]
-            
-            if missing_fields:
-                self.log_test("User Registration", False, 
-                            f"Missing fields in response: {missing_fields}", response)
-            elif "password_hash" in response:
-                self.log_test("User Registration", False, 
-                            "password_hash should not be in response", response)
+            if "plans" in response and isinstance(response["plans"], list):
+                plans = response["plans"]
+                if len(plans) >= 6:
+                    # Check for required plan fields
+                    required_fields = ["id", "name", "type", "validity_days", "number_of_passes", "price"]
+                    plan_names = [plan.get("name", "") for plan in plans]
+                    
+                    # Store plan IDs for later tests
+                    for plan in plans:
+                        if "Daily" in plan.get("name", ""):
+                            self.test_data["daily_plan_id"] = plan.get("id")
+                        elif "Monthly Basic" in plan.get("name", ""):
+                            self.test_data["monthly_basic_plan_id"] = plan.get("id")
+                    
+                    missing_fields = []
+                    for plan in plans[:1]:  # Check first plan
+                        missing_fields.extend([field for field in required_fields if field not in plan])
+                    
+                    if missing_fields:
+                        self.log_test("Subscription Plans", False, 
+                                    f"Missing fields in plan: {missing_fields}", response)
+                    else:
+                        self.log_test("Subscription Plans", True, 
+                                    f"Found {len(plans)} plans with required fields: {', '.join(plan_names[:3])}...")
+                else:
+                    self.log_test("Subscription Plans", False, 
+                                f"Expected at least 6 plans, got {len(plans)}", response)
             else:
-                self.log_test("User Registration", True, 
-                            f"User created successfully with ID: {response.get('id')}")
+                self.log_test("Subscription Plans", False, 
+                            "Missing 'plans' array in response", response)
         else:
-            self.log_test("User Registration", False, 
-                        f"Registration failed with status {status}", response)
+            self.log_test("Subscription Plans", False, 
+                        f"Failed to get plans with status {status}", response)
     
     async def test_user_login_valid(self):
         """Test 2: Valid User Login"""
