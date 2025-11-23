@@ -177,23 +177,45 @@ class PaymentBookingTestSuite:
             self.log_test("Payment Order Creation", False, 
                         f"Order creation failed with status {status}", response)
     
-    async def test_user_login_invalid(self):
-        """Test 3: Invalid Password Login"""
+    async def test_payment_verification_with_pass_purchase(self):
+        """Test 3: Payment Verification with Pass Purchase (Passenger User)"""
+        if not self.passenger_token or not self.test_data["order_id"] or not self.test_data["daily_plan_id"]:
+            self.log_test("Payment Verification with Pass Purchase", False, 
+                        "Missing prerequisites: token, order_id, or plan_id")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.passenger_token}"}
         test_data = {
-            "email": "admin@metrohail.com",
-            "password": "wrongpassword"
+            "razorpay_order_id": self.test_data["order_id"],
+            "razorpay_payment_id": "pay_test_12345",
+            "razorpay_signature": "test_signature",
+            "plan_id": self.test_data["daily_plan_id"]
         }
         
         success, response, status = await self.make_request(
-            "POST", "/auth/login", test_data, expect_status=401
+            "POST", "/payments/verify-payment", test_data, headers=headers, expect_status=200
         )
         
         if success:
-            self.log_test("Invalid Password Login", True, 
-                        "Correctly rejected invalid password")
+            if response.get("success") and "pass" in response:
+                pass_data = response["pass"]
+                required_fields = ["id", "plan_name", "total_passes", "remaining_passes", "valid_from", "valid_until"]
+                missing_fields = [field for field in required_fields if field not in pass_data]
+                
+                if missing_fields:
+                    self.log_test("Payment Verification with Pass Purchase", False, 
+                                f"Missing pass fields: {missing_fields}", response)
+                else:
+                    # Store pass_id for later tests
+                    self.test_data["pass_id"] = pass_data.get("id")
+                    self.log_test("Payment Verification with Pass Purchase", True, 
+                                f"Payment verified and pass created: {pass_data.get('plan_name')}, Passes: {pass_data.get('total_passes')}")
+            else:
+                self.log_test("Payment Verification with Pass Purchase", False, 
+                            "Missing success=true or pass in response", response)
         else:
-            self.log_test("Invalid Password Login", False, 
-                        f"Expected 401 but got {status}", response)
+            self.log_test("Payment Verification with Pass Purchase", False, 
+                        f"Payment verification failed with status {status}", response)
     
     async def test_token_verification(self):
         """Test 4: Token Verification"""
