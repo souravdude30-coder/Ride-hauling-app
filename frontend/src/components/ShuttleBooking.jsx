@@ -127,7 +127,7 @@ const ShuttleBooking = ({ onBack }) => {
               </div>
 
               <div className="text-xs text-gray-500">
-                <span className="font-medium">Operating hours:</span> {route.operatingHours}
+                <span className="font-medium">Operating hours:</span> {route.operating_start} - {route.operating_end}
               </div>
             </Card>
           ))}
