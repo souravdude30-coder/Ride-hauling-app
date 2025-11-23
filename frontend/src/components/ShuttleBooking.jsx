@@ -132,6 +132,7 @@ const ShuttleBooking = ({ onBack }) => {
             </Card>
           ))}
         </div>
+        )}
       </div>
     );
   }
