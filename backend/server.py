@@ -80,6 +80,9 @@ api_router.include_router(locations_router)
 api_router.include_router(rides_router)
 api_router.include_router(drivers_router)
 api_router.include_router(shuttles_router)
+api_router.include_router(payments_router)
+api_router.include_router(passes_router)
+api_router.include_router(bookings_router)
 
 # Include the router in the main app
 app.include_router(api_router)
