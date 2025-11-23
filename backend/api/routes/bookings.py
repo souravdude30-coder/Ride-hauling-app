@@ -143,7 +143,7 @@ async def verify_otp(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f\"Error verifying OTP: {str(e)}\")
+        logger.error(f"Error verifying OTP: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post(\"/verify-qr\")
