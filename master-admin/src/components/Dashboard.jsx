@@ -135,7 +135,7 @@ const Dashboard = ({ user }) => {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Server Uptime</span>
-              <Badge className="bg-green-100 text-green-800">99.98%</Badge>
+              <span className="px-2 py-1 text-xs rounded bg-green-100 text-green-800">99.98%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Active Connections</span>
