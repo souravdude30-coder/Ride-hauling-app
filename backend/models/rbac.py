@@ -103,7 +103,7 @@ ROLE_PERMISSIONS = {
     UserRole.CORPORATE_ADMIN: RoleDefinition(
         role=UserRole.CORPORATE_ADMIN,
         permissions={
-            Permission.CORPORATE_READ, Permission.CORPORATE_ANALYTICS,
+            Permission.CORPORATE_MANAGE, Permission.CORPORATE_READ, Permission.CORPORATE_ANALYTICS,
             Permission.PASSENGER_MANAGE, Permission.PASSENGER_READ, Permission.PASSENGER_TRACK,
             Permission.ROUTE_READ, Permission.VEHICLE_READ, Permission.VEHICLE_TRACK,
             Permission.DRIVER_READ, Permission.EMERGENCY_RESPOND, Permission.SOS_ACCESS,
