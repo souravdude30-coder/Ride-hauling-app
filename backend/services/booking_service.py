@@ -143,7 +143,9 @@ class BookingService:
             }
         )
         
-        return booking
+        # Return updated booking
+        updated_booking_data = await db.bookings.find_one({"id": booking.id})
+        return Booking(**updated_booking_data)
     
     async def complete_booking(self, booking_id: str) -> bool:
         """Mark booking as completed"""
