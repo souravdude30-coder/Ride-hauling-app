@@ -133,9 +133,9 @@ const BookingForm = ({ onBookRide }) => {
             />
           </div>
           
-          {showSuggestions === 'destination' && destination && (
+          {showSuggestions === 'destination' && suggestions.length > 0 && (
             <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-              {getSuggestions(destination).map((location) => (
+              {suggestions.map((location) => (
                 <button
                   key={location.id}
                   type="button" 
