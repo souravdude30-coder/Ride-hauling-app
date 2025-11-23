@@ -164,7 +164,7 @@ const ShuttleBooking = ({ onBack }) => {
                      onClick={() => setSelectedPickup(pickup)}>
                   <div className="font-medium text-gray-900">{pickup.name}</div>
                   <div className="text-sm text-gray-600">{pickup.address}</div>
-                  <div className="text-xs text-green-600 font-medium mt-1">First bus: {pickup.time}</div>
+                  <div className="text-xs text-green-600 font-medium mt-1">First bus: {pickup.pickup_time}</div>
                 </div>
               ))}
             </div>
