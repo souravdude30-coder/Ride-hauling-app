@@ -72,6 +72,7 @@ async def get_status_checks():
     return [StatusCheck(**status_check) for status_check in status_checks]
 
 # Include feature routers
+api_router.include_router(auth_router)
 api_router.include_router(locations_router)
 api_router.include_router(rides_router)
 api_router.include_router(drivers_router)
