@@ -211,7 +211,7 @@ async def create_bulk_booking(
     request: BulkBookingRequest,
     current_user: User = Depends(get_current_user)
 ):
-    \"\"\"Create bulk booking for corporate (Corporate Admin only)\"\"\"
+    """Create bulk booking for corporate (Corporate Admin only)"""
     
     # Check if user has corporate admin permission
     if Permission.CORPORATE_MANAGE not in current_user.permissions:
