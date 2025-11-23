@@ -350,49 +350,39 @@ class PaymentBookingTestSuite:
             self.log_test("Get My Bookings", False, 
                         f"Failed to get bookings with status {status}", response)
     
-    async def test_existing_users_login(self):
-        """Test 7: Test all existing users can login"""
-        existing_users = [
-            {"email": "admin@metrohail.com", "password": "Admin@123", "role": "master_admin"},
-            {"email": "fleet@company.com", "password": "Fleet@123", "role": "fleet_manager"},
-            {"email": "corporate@techcorp.com", "password": "Corp@123", "role": "corporate_admin"},
-            {"email": "driver@metrohail.com", "password": "Driver@123", "role": "driver"},
-            {"email": "passenger@gmail.com", "password": "Pass@123", "role": "passenger"},
-            {"email": "parent@gmail.com", "password": "Parent@123", "role": "parent"}
-        ]
+    async def test_verify_otp_driver(self):
+        """Test 7: Verify OTP (Driver User)"""
+        # Login as driver
+        self.driver_token = await self.login_user("driver@metrohail.com", "Driver@123")
         
-        successful_logins = 0
-        total_users = len(existing_users)
+        if not self.driver_token:
+            self.log_test("Verify OTP (Driver)", False, "Failed to login as driver")
+            return
         
-        for user in existing_users:
-            test_data = {
-                "email": user["email"],
-                "password": user["password"]
-            }
-            
-            success, response, status = await self.make_request(
-                "POST", "/auth/login", test_data, expect_status=200
-            )
-            
-            if success and "access_token" in response:
-                user_data = response.get("user", {})
-                expected_role = user["role"]
-                actual_role = user_data.get("role")
-                
-                if actual_role == expected_role:
-                    successful_logins += 1
-                    print(f"    ✅ {user['email']} ({expected_role}) - Login successful")
-                else:
-                    print(f"    ❌ {user['email']} - Role mismatch: expected {expected_role}, got {actual_role}")
+        if not self.test_data["booking_id"] or not self.test_data["otp"]:
+            self.log_test("Verify OTP (Driver)", False, "Missing booking_id or otp from previous test")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.driver_token}"}
+        test_data = {
+            "booking_id": self.test_data["booking_id"],
+            "otp": self.test_data["otp"]
+        }
+        
+        success, response, status = await self.make_request(
+            "POST", "/bookings/verify-otp", test_data, headers=headers, expect_status=200
+        )
+        
+        if success:
+            if response.get("success") and response.get("message") == "Booking verified successfully":
+                self.log_test("Verify OTP (Driver)", True, 
+                            f"OTP {self.test_data['otp']} verified successfully for booking {self.test_data['booking_id']}")
             else:
-                print(f"    ❌ {user['email']} - Login failed: {response}")
-        
-        if successful_logins == total_users:
-            self.log_test("Existing Users Login", True, 
-                        f"All {total_users} existing users can login successfully")
+                self.log_test("Verify OTP (Driver)", False, 
+                            f"Unexpected response: {response}")
         else:
-            self.log_test("Existing Users Login", False, 
-                        f"Only {successful_logins}/{total_users} users can login")
+            self.log_test("Verify OTP (Driver)", False, 
+                        f"OTP verification failed with status {status}", response)
     
     async def test_password_hashing(self):
         """Test 8: Verify password hashing is working"""
