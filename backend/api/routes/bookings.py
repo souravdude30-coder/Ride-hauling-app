@@ -196,8 +196,8 @@ async def complete_booking(
             raise HTTPException(status_code=404, detail="Booking not found")
         
         return {
-            \"success\": True,
-            \"message\": \"Booking completed\"
+            "success": True,
+            "message": "Booking completed"
         }
         
     except HTTPException:
