@@ -35,6 +35,10 @@ async def get_shuttle_route(route_id: str):
     if not route:
         raise HTTPException(status_code=404, detail="Route not found")
     
+    # Convert ObjectId to string
+    if "_id" in route:
+        route["_id"] = str(route["_id"])
+    
     return {
         "success": True,
         "data": route
