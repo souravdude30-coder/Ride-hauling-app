@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card } from './ui/card';
-import { Badge } from './ui/badge';
 
 const Dashboard = ({ user }) => {
   const [stats, setStats] = useState({
