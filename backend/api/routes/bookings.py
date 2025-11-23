@@ -183,7 +183,7 @@ async def complete_booking(
     booking_id: str,
     current_user: User = Depends(get_current_user)
 ):
-    \"\"\"Mark booking as completed (Driver only)\"\"\"
+    """Mark booking as completed (Driver only)"""
     
     # Check if user is a driver
     if Permission.PASSENGER_READ not in current_user.permissions:
