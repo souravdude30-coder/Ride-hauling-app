@@ -173,14 +173,16 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
         ))}
       </div>
 
-      {selectedRide && (
-        <Button 
-          className="w-full mt-6 bg-black text-white hover:bg-gray-800 py-3"
-          onClick={() => handleRideSelect(selectedRide)}
-        >
-          Confirm {selectedRide.name}
-        </Button>
-      )}
+          {selectedRide && (
+            <Button 
+              className="w-full mt-6 bg-black text-white hover:bg-gray-800 py-3"
+              onClick={() => handleRideSelect(selectedRide)}
+            >
+              Confirm {selectedRide.name || selectedRide.ride_type}
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
