@@ -7,6 +7,8 @@ import RideOptions from "./components/RideOptions";
 import RideTracking from "./components/RideTracking";
 import ShuttleBooking from "./components/ShuttleBooking";
 import ShuttleTracking from "./components/ShuttleTracking";
+import ReserveRide from "./components/ReserveRide";
+import UberShare from "./components/UberShare";
 import { Toaster } from "./components/ui/toaster";
 
 const Home = () => {
