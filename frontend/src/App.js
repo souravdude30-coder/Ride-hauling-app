@@ -82,19 +82,22 @@ const Home = () => {
         <section className="max-w-7xl mx-auto px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">Suggestions</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                 onClick={() => alert('Regular ride booking - Coming to main booking form!')}>
               <div className="text-4xl mb-4">🚗</div>
               <h3 className="text-lg font-semibold mb-2">Ride</h3>
               <p className="text-gray-600 text-sm">Go anywhere with Uber. Request a ride, hop in, and go.</p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                 onClick={() => setCurrentScreen('reserve')}>
               <div className="text-4xl mb-4">🕒</div>
               <h3 className="text-lg font-semibold mb-2">Reserve</h3>
               <p className="text-gray-600 text-sm">Reserve your ride in advance so you can relax on the day of your trip.</p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                 onClick={() => setCurrentScreen('share')}>
               <div className="text-4xl mb-4">🚐</div>
               <h3 className="text-lg font-semibold mb-2">Share</h3>
               <p className="text-gray-600 text-sm">Share your ride with others going your way. Save money on every trip.</p>
