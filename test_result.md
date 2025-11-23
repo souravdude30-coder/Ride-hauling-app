@@ -164,6 +164,42 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ USER INITIALIZATION WORKING: All 6 test users created successfully with proper roles (master_admin, fleet_manager, corporate_admin, driver, passenger, parent). All users can login with provided credentials. Company creation working."
+  
+  - task: "Payment Gateway Integration (Razorpay)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/services/payment_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Razorpay integration complete with create order, verify payment, refund support. Uses mock mode for development until API keys are provided. Routes: POST /api/payments/create-order, POST /api/payments/verify-payment, GET /api/payments/transaction/{id}, GET /api/payments/razorpay-key"
+  
+  - task: "Subscription Plans & Pass Management"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/services/pass_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Pass system complete with 6 default plans (Daily ₹100, Weekly ₹600, Monthly Basic ₹1500, Monthly Premium ₹2500, Quarterly ₹6500, Annual ₹25000). Each journey consumes 1 pass. Bulk purchase for corporate admins. Routes: GET /api/passes/plans, POST /api/passes/plans, GET /api/passes/my-passes, GET /api/passes/{id}, POST /api/passes/bulk-purchase"
+  
+  - task: "Booking System with QR & OTP"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/services/booking_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Booking system complete with QR code generation (single-use) and 6-digit OTP for verification. Routes: POST /api/bookings/create, GET /api/bookings/my-bookings, GET /api/bookings/{id}, POST /api/bookings/verify-otp, POST /api/bookings/verify-qr, POST /api/bookings/{id}/complete, POST /api/bookings/bulk-booking"
 
 frontend:
   - task: "Master Admin App Authentication"
