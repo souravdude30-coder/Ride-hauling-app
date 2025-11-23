@@ -101,11 +101,11 @@ const ShuttleBooking = ({ onBack }) => {
               <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                 <div className="flex items-center text-gray-600">
                   <Clock className="w-4 h-4 mr-2" />
-                  <span>{route.duration}</span>
+                  <span>{route.duration_min}-{route.duration_max} min</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <MapPin className="w-4 h-4 mr-2" />
-                  <span>{route.distance}</span>
+                  <span>{route.distance_km} km</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Users className="w-4 h-4 mr-2" />
