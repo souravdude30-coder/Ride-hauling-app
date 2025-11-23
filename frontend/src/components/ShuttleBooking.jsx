@@ -149,7 +149,7 @@ const ShuttleBooking = ({ onBack }) => {
 
         <div className="mb-6 p-3 bg-gray-50 rounded-lg">
           <div className="font-semibold text-gray-900">{selectedRoute.name}</div>
-          <div className="text-sm text-gray-600">₹{selectedRoute.price} • {selectedRoute.duration}</div>
+          <div className="text-sm text-gray-600">₹{selectedRoute.price} • {selectedRoute.duration_min}-{selectedRoute.duration_max} min</div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
