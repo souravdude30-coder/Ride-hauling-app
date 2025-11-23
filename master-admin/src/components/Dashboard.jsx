@@ -75,7 +75,7 @@ const Dashboard = ({ user }) => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Users</p>
@@ -86,7 +86,7 @@ const Dashboard = ({ user }) => {
           <div className="mt-2 text-sm text-green-600">↗ +12% from last month</div>
         </Card>
 
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Companies</p>
@@ -97,7 +97,7 @@ const Dashboard = ({ user }) => {
           <div className="mt-2 text-sm text-green-600">↗ +8% from last month</div>
         </Card>
 
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Active Drivers</p>
@@ -108,7 +108,7 @@ const Dashboard = ({ user }) => {
           <div className="mt-2 text-sm text-blue-600">→ Stable</div>
         </Card>
 
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Revenue</p>
@@ -122,7 +122,7 @@ const Dashboard = ({ user }) => {
 
       {/* Real-time Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">System Health</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -144,7 +144,7 @@ const Dashboard = ({ user }) => {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Live Operations</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -166,7 +166,7 @@ const Dashboard = ({ user }) => {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
           <div className="space-y-3">
             <button className="w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
@@ -187,7 +187,7 @@ const Dashboard = ({ user }) => {
 
       {/* Recent Activity and Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
           <div className="space-y-3">
             {recentActivity.map((activity) => (
@@ -202,7 +202,7 @@ const Dashboard = ({ user }) => {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <div className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">System Alerts</h3>
           <div className="space-y-3">
             {alerts.map((alert) => (
