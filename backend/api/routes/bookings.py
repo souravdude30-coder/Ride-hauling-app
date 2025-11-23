@@ -215,7 +215,7 @@ async def create_bulk_booking(
     
     # Check if user has corporate admin permission
     if Permission.CORPORATE_MANAGE not in current_user.permissions:
-        raise HTTPException(status_code=403, detail=\"Corporate admin access required\")
+        raise HTTPException(status_code=403, detail="Corporate admin access required")
     
     try:
         # Calculate total amount (mock calculation)
