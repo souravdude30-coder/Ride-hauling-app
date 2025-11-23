@@ -149,13 +149,16 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
               
               <div className="text-right">
                 <div className="font-bold text-lg">
-                  ${rideType.price}
-                  {rideType.surge && (
+                  ${rideType.estimated_fare || rideType.price}
+                  {(rideType.surge || rideType.surge_multiplier > 1) && (
                     <Badge variant="destructive" className="ml-2 text-xs">
                       <Zap className="w-3 h-3 mr-1" />
-                      {rideType.surgeMultiplier}x
+                      {rideType.surge_multiplier || rideType.surgeMultiplier}x
                     </Badge>
                   )}
+                </div>
+                <div className="text-xs text-gray-500">
+                  ETA: {rideType.eta} min
                 </div>
               </div>
             </div>
