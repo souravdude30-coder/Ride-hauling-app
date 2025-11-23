@@ -12,6 +12,8 @@ const ShuttleBooking = ({ onBack }) => {
   const [selectedDate, setSelectedDate] = useState('today');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [bookingStep, setBookingStep] = useState('route'); // route, pickup-drop, time, confirm
+  const [shuttleRoutes, setShuttleRoutes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleRouteSelect = (route) => {
     setSelectedRoute(route);
