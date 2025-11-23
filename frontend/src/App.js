@@ -87,9 +87,9 @@ const Home = () => {
 
       {/* Services section */}
       {currentScreen === 'booking' && (
-        <section className="max-w-7xl mx-auto px-6 py-16">
-          <h2 className="text-2xl font-bold mb-8">Suggestions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <section className="max-w-7xl mx-auto px-4 lg:px-6 py-8 lg:py-16">
+          <h2 className="text-xl lg:text-2xl font-bold mb-6 lg:mb-8">Suggestions</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                  onClick={() => alert('Regular ride booking - Coming to main booking form!')}>
               <div className="text-4xl mb-4">🚗</div>
