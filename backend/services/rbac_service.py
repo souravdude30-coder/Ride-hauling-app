@@ -16,12 +16,18 @@ class RBACService:
         self.secret_key = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production-12345')
     
     def hash_password(self, password: str) -> str:
-        """Hash a password using bcrypt"""
-        return pwd_context.hash(password)
+        """Hash a password using bcrypt with SHA-256 pre-hashing"""
+        # Hash the password with SHA-256 and base64 encode it to avoid 72-byte limit
+        password_hash = hashlib.sha256(password.encode('utf-8')).digest()
+        password_b64 = base64.b64encode(password_hash)
+        return bcrypt.hashpw(password_b64, bcrypt.gensalt()).decode('utf-8')
     
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """Verify a password against its hash"""
-        return pwd_context.verify(plain_password, hashed_password)
+        password_hash = hashlib.sha256(plain_password.encode('utf-8')).digest()
+        password_b64 = base64.b64encode(password_hash)
+        hashed_password_bytes = hashed_password.encode('utf-8')
+        return bcrypt.checkpw(password_b64, hashed_password_bytes)
     
     async def create_user(self, email: str, name: str, role: UserRole, password: str,
                          company_id: Optional[str] = None, phone: Optional[str] = None) -> User:
