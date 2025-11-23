@@ -217,29 +217,45 @@ class PaymentBookingTestSuite:
             self.log_test("Payment Verification with Pass Purchase", False, 
                         f"Payment verification failed with status {status}", response)
     
-    async def test_token_verification(self):
-        """Test 4: Token Verification"""
-        if not self.auth_token:
-            self.log_test("Token Verification", False, 
-                        "No auth token available from previous login test")
+    async def test_get_my_passes(self):
+        """Test 4: Get My Passes (Passenger User)"""
+        if not self.passenger_token:
+            self.log_test("Get My Passes", False, "No passenger token available")
             return
         
-        headers = {"Authorization": f"Bearer {self.auth_token}"}
+        headers = {"Authorization": f"Bearer {self.passenger_token}"}
         
         success, response, status = await self.make_request(
-            "GET", "/auth/verify-token", headers=headers, expect_status=200
+            "GET", "/passes/my-passes", headers=headers, expect_status=200
         )
         
         if success:
-            if response.get("valid") is True:
-                self.log_test("Token Verification", True, 
-                            f"Token verified for user {response.get('user_id')} with role {response.get('role')}")
+            if "passes" in response and isinstance(response["passes"], list):
+                passes = response["passes"]
+                if len(passes) > 0:
+                    # Check first pass structure
+                    pass_data = passes[0]
+                    required_fields = ["id", "plan_name", "total_passes", "remaining_passes", "valid_from", "valid_until"]
+                    missing_fields = [field for field in required_fields if field not in pass_data]
+                    
+                    if missing_fields:
+                        self.log_test("Get My Passes", False, 
+                                    f"Missing pass fields: {missing_fields}", response)
+                    else:
+                        # Update pass_id if not set
+                        if not self.test_data["pass_id"]:
+                            self.test_data["pass_id"] = pass_data.get("id")
+                        
+                        self.log_test("Get My Passes", True, 
+                                    f"Retrieved {len(passes)} passes. First pass: {pass_data.get('plan_name')}")
+                else:
+                    self.log_test("Get My Passes", True, "No passes found (empty list is valid)")
             else:
-                self.log_test("Token Verification", False, 
-                            "Token marked as invalid", response)
+                self.log_test("Get My Passes", False, 
+                            "Missing 'passes' array in response", response)
         else:
-            self.log_test("Token Verification", False, 
-                        f"Token verification failed with status {status}", response)
+            self.log_test("Get My Passes", False, 
+                        f"Failed to get passes with status {status}", response)
     
     async def test_get_current_user(self):
         """Test 5: Get Current User"""
