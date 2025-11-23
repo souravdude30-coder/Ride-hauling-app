@@ -171,7 +171,8 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
             )}
           </div>
         ))}
-      </div>
+            </div>
+          )}
 
           {selectedRide && (
             <Button 
