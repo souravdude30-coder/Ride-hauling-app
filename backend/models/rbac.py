@@ -196,7 +196,7 @@ class SessionToken(BaseModel):
     token: str
     user_id: str
     expires_at: datetime
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_active: bool = True
 
 class EmergencyContact(BaseModel):
