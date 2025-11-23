@@ -127,6 +127,7 @@ const BookingForm = ({ onBookRide }) => {
               onChange={(e) => {
                 setDestination(e.target.value);
                 setShowSuggestions('destination');
+                fetchSuggestions(e.target.value);
               }}
               className="border-0 p-0 focus:ring-0 bg-transparent"
             />
