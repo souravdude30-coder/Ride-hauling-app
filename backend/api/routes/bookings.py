@@ -178,7 +178,7 @@ async def verify_qr(
         logger.error(f"Error verifying QR: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post(\"/{booking_id}/complete\")
+@router.post("/{booking_id}/complete")
 async def complete_booking(
     booking_id: str,
     current_user: User = Depends(get_current_user)
