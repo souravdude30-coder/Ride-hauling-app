@@ -115,6 +115,7 @@ const BookingForm = ({ onBookRide }) => {
                 setShowSuggestions('destination');
                 fetchSuggestions(e.target.value);
               }}
+              onBlur={handleInputBlur}
               className="border-0 p-0 focus:ring-0 bg-transparent"
             />
           </div>
