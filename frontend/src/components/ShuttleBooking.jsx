@@ -173,7 +173,7 @@ const ShuttleBooking = ({ onBack }) => {
           <div>
             <h3 className="font-semibold mb-3 text-red-600">📍 Drop Points</h3>
             <div className="space-y-3">
-              {selectedRoute.dropHotspots.map((drop) => (
+              {(selectedRoute.drop_hotspots || []).map((drop) => (
                 <div key={drop.id}
                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                        selectedDrop?.id === drop.id ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
