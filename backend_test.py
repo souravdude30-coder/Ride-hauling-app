@@ -128,39 +128,54 @@ class PaymentBookingTestSuite:
             self.log_test("Subscription Plans", False, 
                         f"Failed to get plans with status {status}", response)
     
-    async def test_user_login_valid(self):
-        """Test 2: Valid User Login"""
+    async def test_payment_order_creation(self):
+        """Test 2: Payment Order Creation (Passenger User)"""
+        # Login as passenger
+        self.passenger_token = await self.login_user("passenger@gmail.com", "Pass@123")
+        
+        if not self.passenger_token:
+            self.log_test("Payment Order Creation", False, "Failed to login as passenger")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.passenger_token}"}
         test_data = {
-            "email": "admin@metrohail.com",
-            "password": "Admin@123"
+            "amount": 100.0,
+            "description": "Test payment for daily pass"
         }
         
         success, response, status = await self.make_request(
-            "POST", "/auth/login", test_data, expect_status=200
+            "POST", "/payments/create-order", test_data, headers=headers, expect_status=200
         )
         
         if success:
-            # Check response structure
-            if "access_token" in response and "user" in response:
-                self.auth_token = response["access_token"]  # Store for later tests
-                user_data = response["user"]
-                
-                # Verify user data structure
-                required_user_fields = ["id", "email", "name", "role", "permissions"]
-                missing_fields = [field for field in required_user_fields if field not in user_data]
+            if "success" in response and response["success"] and "order" in response:
+                order = response["order"]
+                required_fields = ["order_id", "amount", "currency", "key_id", "transaction_id"]
+                missing_fields = [field for field in required_fields if field not in order]
                 
                 if missing_fields:
-                    self.log_test("Valid User Login", False, 
-                                f"Missing user fields: {missing_fields}", response)
+                    self.log_test("Payment Order Creation", False, 
+                                f"Missing order fields: {missing_fields}", response)
                 else:
-                    self.log_test("Valid User Login", True, 
-                                f"Login successful for {user_data.get('email')} with role {user_data.get('role')}")
+                    # Store order_id for next test
+                    self.test_data["order_id"] = order.get("order_id")
+                    
+                    # Verify amount is in paise (10000 for ₹100)
+                    expected_amount = 10000
+                    actual_amount = order.get("amount")
+                    
+                    if actual_amount == expected_amount and order.get("currency") == "INR":
+                        self.log_test("Payment Order Creation", True, 
+                                    f"Order created successfully: {order.get('order_id')}, Amount: {actual_amount} paise")
+                    else:
+                        self.log_test("Payment Order Creation", False, 
+                                    f"Amount/currency mismatch: expected {expected_amount} INR, got {actual_amount} {order.get('currency')}")
             else:
-                self.log_test("Valid User Login", False, 
-                            "Missing access_token or user in response", response)
+                self.log_test("Payment Order Creation", False, 
+                            "Missing success=true or order in response", response)
         else:
-            self.log_test("Valid User Login", False, 
-                        f"Login failed with status {status}", response)
+            self.log_test("Payment Order Creation", False, 
+                        f"Order creation failed with status {status}", response)
     
     async def test_user_login_invalid(self):
         """Test 3: Invalid Password Login"""
