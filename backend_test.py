@@ -444,34 +444,172 @@ class PaymentBookingTestSuite:
             self.log_test("Verify QR Code (Driver)", False, 
                         f"QR verification failed with status {status}", response)
     
+    async def test_complete_booking_driver(self):
+        """Test 9: Complete Booking (Driver User)"""
+        if not self.driver_token or not self.test_data["booking_id"]:
+            self.log_test("Complete Booking (Driver)", False, "Missing driver token or booking_id")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.driver_token}"}
+        
+        success, response, status = await self.make_request(
+            "POST", f"/bookings/{self.test_data['booking_id']}/complete", 
+            headers=headers, expect_status=200
+        )
+        
+        if success:
+            if response.get("success") and response.get("message") == "Booking completed":
+                self.log_test("Complete Booking (Driver)", True, 
+                            f"Booking {self.test_data['booking_id']} completed successfully")
+            else:
+                self.log_test("Complete Booking (Driver)", False, 
+                            f"Unexpected response: {response}")
+        else:
+            self.log_test("Complete Booking (Driver)", False, 
+                        f"Booking completion failed with status {status}", response)
+    
+    async def test_bulk_pass_purchase_corporate(self):
+        """Test 10: Bulk Pass Purchase (Corporate Admin User)"""
+        # Login as corporate admin
+        self.corporate_token = await self.login_user("corporate@techcorp.com", "Corp@123")
+        
+        if not self.corporate_token:
+            self.log_test("Bulk Pass Purchase (Corporate)", False, "Failed to login as corporate admin")
+            return
+        
+        if not self.test_data["monthly_basic_plan_id"]:
+            self.log_test("Bulk Pass Purchase (Corporate)", False, "Missing monthly basic plan ID")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.corporate_token}"}
+        # Generate mock employee IDs
+        employee_ids = [str(uuid.uuid4()) for _ in range(3)]
+        
+        test_data = {
+            "plan_id": self.test_data["monthly_basic_plan_id"],
+            "employee_ids": employee_ids
+        }
+        
+        success, response, status = await self.make_request(
+            "POST", "/passes/bulk-purchase", test_data, headers=headers, expect_status=200
+        )
+        
+        if success:
+            if (response.get("success") and 
+                "passes" in response and 
+                "total_cost" in response):
+                
+                passes = response["passes"]
+                total_cost = response["total_cost"]
+                
+                if len(passes) == len(employee_ids):
+                    self.log_test("Bulk Pass Purchase (Corporate)", True, 
+                                f"Created {len(passes)} passes for employees, Total cost: ₹{total_cost}")
+                else:
+                    self.log_test("Bulk Pass Purchase (Corporate)", False, 
+                                f"Expected {len(employee_ids)} passes, got {len(passes)}")
+            else:
+                self.log_test("Bulk Pass Purchase (Corporate)", False, 
+                            "Missing success, passes, or total_cost in response", response)
+        else:
+            self.log_test("Bulk Pass Purchase (Corporate)", False, 
+                        f"Bulk purchase failed with status {status}", response)
+    
+    async def test_bulk_booking_corporate(self):
+        """Test 11: Bulk Booking (Corporate Admin User)"""
+        if not self.corporate_token:
+            self.log_test("Bulk Booking (Corporate)", False, "No corporate token available")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.corporate_token}"}
+        
+        # Generate booking dates
+        booking_dates = [
+            (datetime.now() + timedelta(days=5)).isoformat() + "Z",
+            (datetime.now() + timedelta(days=6)).isoformat() + "Z"
+        ]
+        
+        employee_ids = [str(uuid.uuid4()) for _ in range(2)]
+        
+        test_data = {
+            "route_id": "route_123",
+            "booking_dates": booking_dates,
+            "capacity": 10,
+            "payment_type": "upfront",
+            "employee_ids": employee_ids
+        }
+        
+        success, response, status = await self.make_request(
+            "POST", "/bookings/bulk-booking", test_data, headers=headers, expect_status=200
+        )
+        
+        if success:
+            if (response.get("success") and 
+                "bulk_booking" in response and 
+                "total_amount" in response):
+                
+                bulk_booking = response["bulk_booking"]
+                total_amount = response["total_amount"]
+                
+                self.log_test("Bulk Booking (Corporate)", True, 
+                            f"Bulk booking created: Route {bulk_booking.get('route_id')}, Total: ₹{total_amount}")
+            else:
+                self.log_test("Bulk Booking (Corporate)", False, 
+                            "Missing success, bulk_booking, or total_amount in response", response)
+        else:
+            self.log_test("Bulk Booking (Corporate)", False, 
+                        f"Bulk booking failed with status {status}", response)
+    
+    async def test_razorpay_key_endpoint(self):
+        """Test 12: Razorpay Key Endpoint"""
+        success, response, status = await self.make_request(
+            "GET", "/payments/razorpay-key", expect_status=200
+        )
+        
+        if success:
+            if "key_id" in response:
+                key_id = response["key_id"]
+                self.log_test("Razorpay Key Endpoint", True, 
+                            f"Razorpay key retrieved: {key_id}")
+            else:
+                self.log_test("Razorpay Key Endpoint", False, 
+                            "Missing key_id in response", response)
+        else:
+            self.log_test("Razorpay Key Endpoint", False, 
+                        f"Failed to get Razorpay key with status {status}", response)
+    
     async def run_all_tests(self):
-        """Run all authentication tests"""
-        print("🚀 Starting Backend Authentication Test Suite")
-        print("=" * 60)
+        """Run all payment, subscription, and booking tests"""
+        print("🚀 Starting Backend Payment Gateway, Subscription Plans, and Booking System Test Suite")
+        print("=" * 80)
         print(f"Testing against: {BASE_URL}")
-        print("=" * 60)
+        print("=" * 80)
         print()
         
         await self.setup()
         
         try:
-            # Run all tests
-            await self.test_user_registration()
-            await self.test_user_login_valid()
-            await self.test_user_login_invalid()
-            await self.test_token_verification()
-            await self.test_get_current_user()
-            await self.test_invalid_token()
-            await self.test_existing_users_login()
-            await self.test_password_hashing()
+            # Run all tests in sequence
+            await self.test_subscription_plans()
+            await self.test_payment_order_creation()
+            await self.test_payment_verification_with_pass_purchase()
+            await self.test_get_my_passes()
+            await self.test_create_booking_with_pass()
+            await self.test_get_my_bookings()
+            await self.test_verify_otp_driver()
+            await self.test_verify_qr_code_driver()
+            await self.test_complete_booking_driver()
+            await self.test_bulk_pass_purchase_corporate()
+            await self.test_bulk_booking_corporate()
+            await self.test_razorpay_key_endpoint()
             
         finally:
             await self.teardown()
         
         # Print summary
-        print("=" * 60)
+        print("=" * 80)
         print("📊 TEST SUMMARY")
-        print("=" * 60)
+        print("=" * 80)
         
         passed = sum(1 for result in self.test_results if result["success"])
         total = len(self.test_results)
@@ -482,7 +620,7 @@ class PaymentBookingTestSuite:
         print(f"Success Rate: {(passed/total)*100:.1f}%")
         
         if passed == total:
-            print("\n🎉 All tests passed! Authentication system is working correctly.")
+            print("\n🎉 All tests passed! Payment gateway, subscription plans, and booking system are working correctly.")
             return True
         else:
             print(f"\n⚠️ {total - passed} test(s) failed. Please check the issues above.")
