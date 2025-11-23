@@ -83,3 +83,51 @@ body {
 .appearance-none { appearance: none; }
 .transition-colors { transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; }
 .cursor-pointer { cursor: pointer; }
+.bg-white { background-color: white; }
+.shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+.rounded-lg { border-radius: 0.5rem; }
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.gap-6 { gap: 1.5rem; }
+.gap-3 { gap: 0.75rem; }
+.md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lg\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.justify-between { justify-content: space-between; }
+.text-3xl { font-size: 1.875rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-4xl { font-size: 2.25rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.bg-green-100 { background-color: #dcfce7; }
+.text-green-800 { color: #166534; }
+.text-green-600 { color: #16a34a; }
+.bg-blue-100 { background-color: #dbeafe; }
+.text-blue-800 { color: #1e40af; }
+.bg-gray-50 { background-color: #f9fafb; }
+.bg-blue-50 { background-color: #eff6ff; }
+.bg-green-50 { background-color: #f0fdf4; }
+.bg-purple-50 { background-color: #faf5ff; }
+.bg-orange-50 { background-color: #fff7ed; }
+.hover\\:bg-blue-100:hover { background-color: #dbeafe; }
+.hover\\:bg-green-100:hover { background-color: #dcfce7; }
+.hover\\:bg-purple-100:hover { background-color: #f3e8ff; }
+.hover\\:bg-orange-100:hover { background-color: #fed7aa; }
+.text-orange-600 { color: #ea580c; }
+.bg-yellow-100 { background-color: #fef3c7; }
+.text-yellow-800 { color: #92400e; }
+.border-red-200 { border-color: #fecaca; }
+.border-yellow-200 { border-color: #fde68a; }
+.border-blue-200 { border-color: #bfdbfe; }
+.border-gray-200 { border-color: #e5e7eb; }
+@media (min-width: 768px) {
+  .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .lg\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
