@@ -190,7 +190,7 @@ class AuditLog(BaseModel):
     details: Dict = {}
     ip_address: Optional[str] = None
     user_agent: Optional[str] = None
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class SessionToken(BaseModel):
     token: str
