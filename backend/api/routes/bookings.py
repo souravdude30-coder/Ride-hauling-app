@@ -206,7 +206,7 @@ async def complete_booking(
         logger.error(f"Error completing booking: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post(\"/bulk-booking\")
+@router.post("/bulk-booking")
 async def create_bulk_booking(
     request: BulkBookingRequest,
     current_user: User = Depends(get_current_user)
