@@ -131,7 +131,7 @@ const Dashboard = ({ user }) => {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Database Performance</span>
-              <Badge className="bg-green-100 text-green-800">Optimal</Badge>
+              <span className="px-2 py-1 text-xs rounded bg-green-100 text-green-800">Optimal</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Server Uptime</span>
