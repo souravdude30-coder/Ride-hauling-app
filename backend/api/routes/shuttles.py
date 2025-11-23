@@ -14,6 +14,10 @@ async def get_shuttle_routes():
     """
     try:
         routes = await db.shuttle_routes.find({"is_active": True}).to_list(100)
+        # Convert ObjectId to string for JSON serialization
+        for route in routes:
+            if "_id" in route:
+                route["_id"] = str(route["_id"])
         return {
             "success": True,
             "data": routes,
