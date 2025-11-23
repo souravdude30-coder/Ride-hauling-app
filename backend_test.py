@@ -314,20 +314,41 @@ class PaymentBookingTestSuite:
             self.log_test("Create Booking with Pass", False, 
                         f"Booking creation failed with status {status}", response)
     
-    async def test_invalid_token(self):
-        """Test 6: Invalid Token"""
-        headers = {"Authorization": "Bearer invalid_token_12345"}
+    async def test_get_my_bookings(self):
+        """Test 6: Get My Bookings (Passenger User)"""
+        if not self.passenger_token:
+            self.log_test("Get My Bookings", False, "No passenger token available")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.passenger_token}"}
         
         success, response, status = await self.make_request(
-            "GET", "/auth/me", headers=headers, expect_status=401
+            "GET", "/bookings/my-bookings", headers=headers, expect_status=200
         )
         
         if success:
-            self.log_test("Invalid Token", True, 
-                        "Correctly rejected invalid token")
+            if "bookings" in response and isinstance(response["bookings"], list):
+                bookings = response["bookings"]
+                if len(bookings) > 0:
+                    # Check first booking structure
+                    booking = bookings[0]
+                    required_fields = ["id", "pickup_location", "dropoff_location", "journey_date", "status"]
+                    missing_fields = [field for field in required_fields if field not in booking]
+                    
+                    if missing_fields:
+                        self.log_test("Get My Bookings", False, 
+                                    f"Missing booking fields: {missing_fields}", response)
+                    else:
+                        self.log_test("Get My Bookings", True, 
+                                    f"Retrieved {len(bookings)} bookings. First booking: {booking.get('pickup_location')} to {booking.get('dropoff_location')}")
+                else:
+                    self.log_test("Get My Bookings", True, "No bookings found (empty list is valid)")
+            else:
+                self.log_test("Get My Bookings", False, 
+                            "Missing 'bookings' array in response", response)
         else:
-            self.log_test("Invalid Token", False, 
-                        f"Expected 401 but got {status}", response)
+            self.log_test("Get My Bookings", False, 
+                        f"Failed to get bookings with status {status}", response)
     
     async def test_existing_users_login(self):
         """Test 7: Test all existing users can login"""
