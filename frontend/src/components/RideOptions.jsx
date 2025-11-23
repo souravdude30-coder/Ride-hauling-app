@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Users, Clock, Zap } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { mockRideTypes } from '../data/mock';
+import MapView from './MapView';
 
 const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
   const [selectedRide, setSelectedRide] = useState(null);
