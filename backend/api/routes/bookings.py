@@ -167,9 +167,9 @@ async def verify_qr(
             raise HTTPException(status_code=404, detail="Booking not found")
         
         return {
-            \"success\": True,
-            \"message\": \"Booking verified successfully\",
-            \"booking\": booking.dict()
+            "success": True,
+            "message": "Booking verified successfully",
+            "booking": booking.dict()
         }
         
     except HTTPException:
