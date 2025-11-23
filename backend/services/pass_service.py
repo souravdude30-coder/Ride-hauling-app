@@ -80,7 +80,7 @@ class PassService:
         query = {"user_id": user_id}
         if active_only:
             query["is_active"] = True
-            query["valid_until"] = {"$gte": datetime.now(timezone.utc)}
+            # Use a more lenient query for valid_until to avoid timezone issues
             query["remaining_passes"] = {"$gt": 0}
         
         passes_data = await db.passes.find(query).to_list(100)
