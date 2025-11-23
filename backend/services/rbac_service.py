@@ -3,14 +3,26 @@ from models.rbac import User, UserRole, Permission, ROLE_PERMISSIONS, AuditLog, 
 from database import db
 import jwt
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
+from passlib.context import CryptContext
+
+# Password hashing context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class RBACService:
     def __init__(self):
-        self.secret_key = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-here')
+        self.secret_key = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production-12345')
     
-    async def create_user(self, email: str, name: str, role: UserRole, 
+    def hash_password(self, password: str) -> str:
+        """Hash a password using bcrypt"""
+        return pwd_context.hash(password)
+    
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        """Verify a password against its hash"""
+        return pwd_context.verify(plain_password, hashed_password)
+    
+    async def create_user(self, email: str, name: str, role: UserRole, password: str,
                          company_id: Optional[str] = None, phone: Optional[str] = None) -> User:
         """Create a new user with role-based permissions"""
         
@@ -44,9 +56,10 @@ class RBACService:
             permissions=role_def.permissions
         )
         
-        # Save to database
+        # Save to database with hashed password
         user_dict = user.dict()
         user_dict["permissions"] = list(user_dict["permissions"])  # Convert set to list for MongoDB
+        user_dict["password_hash"] = self.hash_password(password)  # Store hashed password
         await db.users.insert_one(user_dict)
         
         # Log user creation
@@ -62,10 +75,13 @@ class RBACService:
     
     async def authenticate_user(self, email: str, password: str) -> Optional[str]:
         """Authenticate user and return JWT token"""
-        # In a real implementation, you'd verify password hash
         user_data = await db.users.find_one({"email": email, "is_active": True})
         
         if not user_data:
+            return None
+        
+        # Verify password
+        if not self.verify_password(password, user_data.get("password_hash", "")):
             return None
         
         # Update last login
