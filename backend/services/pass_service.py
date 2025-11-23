@@ -105,7 +105,12 @@ class PassService:
         if not pass_obj.is_active:
             raise ValueError("Pass is not active")
         
-        if pass_obj.valid_until < datetime.now(timezone.utc):
+        # Ensure both datetimes are timezone-aware for comparison
+        valid_until = pass_obj.valid_until
+        if valid_until.tzinfo is None:
+            valid_until = valid_until.replace(tzinfo=timezone.utc)
+        
+        if valid_until < datetime.now(timezone.utc):
             raise ValueError("Pass has expired")
         
         if pass_obj.remaining_passes <= 0:
