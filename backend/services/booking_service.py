@@ -43,6 +43,10 @@ class BookingService:
                             route_id: Optional[str] = None) -> Booking:
         """Create a new booking"""
         
+        # Ensure journey_date is timezone-aware
+        if journey_date.tzinfo is None:
+            journey_date = journey_date.replace(tzinfo=timezone.utc)
+        
         # Generate OTP and QR code
         otp = self.generate_otp()
         
