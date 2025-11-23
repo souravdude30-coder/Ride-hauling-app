@@ -244,7 +244,7 @@ class RBACService:
                 "$set": {
                     "role": new_role.value,
                     "permissions": new_permissions,
-                    "updated_at": datetime.utcnow()
+                    "updated_at": datetime.now(timezone.utc)
                 }
             }
         )
