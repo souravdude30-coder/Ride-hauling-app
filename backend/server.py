@@ -16,6 +16,9 @@ from api.routes.locations import router as locations_router
 from api.routes.rides import router as rides_router
 from api.routes.drivers import router as drivers_router
 from api.routes.shuttles import router as shuttles_router
+from api.routes.payments import router as payments_router
+from api.routes.passes import router as passes_router
+from api.routes.bookings import router as bookings_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
