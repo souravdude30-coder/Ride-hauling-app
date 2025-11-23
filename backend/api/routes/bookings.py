@@ -133,7 +133,7 @@ async def verify_otp(
         )
         
         if not is_valid:
-            raise HTTPException(status_code=400, detail=\"Invalid OTP\")
+            raise HTTPException(status_code=400, detail="Invalid OTP")
         
         return {
             \"success\": True,
