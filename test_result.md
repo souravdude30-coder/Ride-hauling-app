@@ -233,9 +233,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Master Admin App Authentication"
-    - "Corporate Admin App Authentication"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
