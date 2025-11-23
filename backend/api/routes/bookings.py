@@ -164,7 +164,7 @@ async def verify_qr(
         )
         
         if not booking:
-            raise HTTPException(status_code=404, detail=\"Booking not found\")
+            raise HTTPException(status_code=404, detail="Booking not found")
         
         return {
             \"success\": True,
@@ -193,7 +193,7 @@ async def complete_booking(
         success = await booking_service.complete_booking(booking_id)
         
         if not success:
-            raise HTTPException(status_code=404, detail=\"Booking not found\")
+            raise HTTPException(status_code=404, detail="Booking not found")
         
         return {
             \"success\": True,
