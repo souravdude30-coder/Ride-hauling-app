@@ -179,7 +179,7 @@ class Company(BaseModel):
     domain: str  # email domain for automatic role assignment
     admin_emails: List[str] = []
     is_active: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class AuditLog(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
