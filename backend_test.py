@@ -19,7 +19,18 @@ class PaymentBookingTestSuite:
     def __init__(self):
         self.session = None
         self.test_results = []
-        self.auth_token = None
+        self.passenger_token = None
+        self.corporate_token = None
+        self.driver_token = None
+        self.test_data = {
+            "order_id": None,
+            "pass_id": None,
+            "booking_id": None,
+            "otp": None,
+            "qr_data": None,
+            "daily_plan_id": None,
+            "monthly_basic_plan_id": None
+        }
         
     async def setup(self):
         """Setup test session"""
