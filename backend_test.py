@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 """
-Backend Authentication System Test Suite
-Tests all authentication endpoints and functionality
+Backend Payment Gateway, Subscription Plans, and Booking System Test Suite
+Tests payment gateway, subscription plans, and booking system functionality
 """
 
 import asyncio
 import aiohttp
 import json
 import sys
+import uuid
 from typing import Dict, Any, Optional
+from datetime import datetime, timedelta
 
 # Test configuration
 BASE_URL = "https://metrohail.preview.emergentagent.com/api"
 
-class AuthTestSuite:
+class PaymentBookingTestSuite:
     def __init__(self):
         self.session = None
         self.test_results = []
