@@ -123,7 +123,7 @@ async def verify_otp(
     
     # Check if user is a driver
     if Permission.PASSENGER_READ not in current_user.permissions:
-        raise HTTPException(status_code=403, detail=\"Driver access required\")
+        raise HTTPException(status_code=403, detail="Driver access required")
     
     try:
         is_valid = await booking_service.verify_booking_otp(
@@ -155,7 +155,7 @@ async def verify_qr(
     
     # Check if user is a driver
     if Permission.PASSENGER_READ not in current_user.permissions:
-        raise HTTPException(status_code=403, detail=\"Driver access required\")
+        raise HTTPException(status_code=403, detail="Driver access required")
     
     try:
         booking = await booking_service.verify_booking_qr(
@@ -187,7 +187,7 @@ async def complete_booking(
     
     # Check if user is a driver
     if Permission.PASSENGER_READ not in current_user.permissions:
-        raise HTTPException(status_code=403, detail=\"Driver access required\")
+        raise HTTPException(status_code=403, detail="Driver access required")
     
     try:
         success = await booking_service.complete_booking(booking_id)
