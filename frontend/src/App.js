@@ -43,7 +43,7 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="flex items-center justify-between max-w-7xl mx-auto px-6 py-12">
+      <main className="flex flex-col lg:flex-row lg:items-center lg:justify-between max-w-7xl mx-auto px-4 lg:px-6 py-6 lg:py-12">
         <div className="flex-1">
           {currentScreen === 'booking' && (
             <BookingForm onBookRide={handleBookRide} />
