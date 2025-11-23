@@ -31,9 +31,9 @@ const Home = () => {
   };
 
   const handleRideComplete = () => {
-    // Reset to booking screen after ride completion
+    // Reset to home screen after ride completion
     setTimeout(() => {
-      setCurrentScreen('booking');
+      setCurrentScreen('home');
       setBookingDetails(null);
       setSelectedRide(null);
     }, 3000);
