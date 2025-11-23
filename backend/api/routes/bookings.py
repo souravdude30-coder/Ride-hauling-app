@@ -203,7 +203,7 @@ async def complete_booking(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f\"Error completing booking: {str(e)}\")
+        logger.error(f"Error completing booking: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post(\"/bulk-booking\")
