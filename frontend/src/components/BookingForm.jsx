@@ -95,6 +95,7 @@ const BookingForm = ({ onBookRide }) => {
               onChange={(e) => {
                 setPickup(e.target.value);
                 setShowSuggestions('pickup');
+                fetchSuggestions(e.target.value);
               }}
               className="border-0 p-0 focus:ring-0 bg-transparent"
             />
