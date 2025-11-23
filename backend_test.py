@@ -257,35 +257,62 @@ class PaymentBookingTestSuite:
             self.log_test("Get My Passes", False, 
                         f"Failed to get passes with status {status}", response)
     
-    async def test_get_current_user(self):
-        """Test 5: Get Current User"""
-        if not self.auth_token:
-            self.log_test("Get Current User", False, 
-                        "No auth token available from previous login test")
+    async def test_create_booking_with_pass(self):
+        """Test 5: Create Booking with Pass (Passenger User)"""
+        if not self.passenger_token or not self.test_data["pass_id"]:
+            self.log_test("Create Booking with Pass", False, 
+                        "Missing passenger token or pass_id")
             return
         
-        headers = {"Authorization": f"Bearer {self.auth_token}"}
+        headers = {"Authorization": f"Bearer {self.passenger_token}"}
+        journey_date = (datetime.now() + timedelta(days=1)).isoformat() + "Z"
+        
+        test_data = {
+            "pass_id": self.test_data["pass_id"],
+            "pickup_location": "Fortis Hospital, Kolkata",
+            "dropoff_location": "Salt Lake Stadium",
+            "journey_date": journey_date
+        }
         
         success, response, status = await self.make_request(
-            "GET", "/auth/me", headers=headers, expect_status=200
+            "POST", "/bookings/create", test_data, headers=headers, expect_status=200
         )
         
         if success:
-            required_fields = ["id", "email", "name", "role", "permissions", "is_active"]
-            missing_fields = [field for field in required_fields if field not in response]
-            
-            if missing_fields:
-                self.log_test("Get Current User", False, 
-                            f"Missing fields: {missing_fields}", response)
-            elif "password_hash" in response:
-                self.log_test("Get Current User", False, 
-                            "password_hash should not be in response", response)
+            if response.get("success") and "booking" in response:
+                booking = response["booking"]
+                required_fields = ["id", "otp", "qr_code", "qr_data"]
+                missing_fields = [field for field in required_fields if field not in booking]
+                
+                if missing_fields:
+                    self.log_test("Create Booking with Pass", False, 
+                                f"Missing booking fields: {missing_fields}", response)
+                else:
+                    # Store booking data for later tests
+                    self.test_data["booking_id"] = booking.get("id")
+                    self.test_data["otp"] = booking.get("otp")
+                    self.test_data["qr_data"] = booking.get("qr_data")
+                    
+                    # Verify OTP is 6 digits
+                    otp = booking.get("otp", "")
+                    qr_code = booking.get("qr_code", "")
+                    
+                    if len(otp) == 6 and otp.isdigit():
+                        if qr_code.startswith("data:image/png;base64,") or len(qr_code) > 100:
+                            self.log_test("Create Booking with Pass", True, 
+                                        f"Booking created: ID={booking.get('id')}, OTP={otp}, QR code generated")
+                        else:
+                            self.log_test("Create Booking with Pass", False, 
+                                        f"QR code format invalid: {qr_code[:50]}...")
+                    else:
+                        self.log_test("Create Booking with Pass", False, 
+                                    f"OTP format invalid: expected 6 digits, got '{otp}'")
             else:
-                self.log_test("Get Current User", True, 
-                            f"Retrieved user data for {response.get('email')}")
+                self.log_test("Create Booking with Pass", False, 
+                            "Missing success=true or booking in response", response)
         else:
-            self.log_test("Get Current User", False, 
-                        f"Failed to get user data with status {status}", response)
+            self.log_test("Create Booking with Pass", False, 
+                        f"Booking creation failed with status {status}", response)
     
     async def test_invalid_token(self):
         """Test 6: Invalid Token"""
