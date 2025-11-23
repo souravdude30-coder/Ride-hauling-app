@@ -112,7 +112,7 @@ const ShuttleBooking = ({ onBack }) => {
                   <span>{route.capacity} seats</span>
                 </div>
                 <div className="text-gray-600">
-                  <span>{route.frequency}</span>
+                  <span>Every {route.frequency_minutes} min</span>
                 </div>
               </div>
 
