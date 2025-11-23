@@ -384,41 +384,65 @@ class PaymentBookingTestSuite:
             self.log_test("Verify OTP (Driver)", False, 
                         f"OTP verification failed with status {status}", response)
     
-    async def test_password_hashing(self):
-        """Test 8: Verify password hashing is working"""
-        # This test verifies that we can login with correct password and fail with wrong password
-        # indicating that password hashing/verification is working
+    async def test_verify_qr_code_driver(self):
+        """Test 8: Verify QR Code (Driver User)"""
+        # First create another booking to get fresh QR data
+        if not self.passenger_token or not self.test_data["pass_id"]:
+            self.log_test("Verify QR Code (Driver)", False, "Missing passenger token or pass_id")
+            return
         
-        test_email = "admin@metrohail.com"
-        correct_password = "Admin@123"
-        wrong_password = "WrongPassword123"
+        # Create new booking for QR test
+        headers = {"Authorization": f"Bearer {self.passenger_token}"}
+        journey_date = (datetime.now() + timedelta(days=2)).isoformat() + "Z"
         
-        # Test correct password
-        success_correct, _, _ = await self.make_request(
-            "POST", "/auth/login", 
-            {"email": test_email, "password": correct_password}, 
-            expect_status=200
+        booking_data = {
+            "pass_id": self.test_data["pass_id"],
+            "pickup_location": "Park Street, Kolkata",
+            "dropoff_location": "Howrah Station",
+            "journey_date": journey_date
+        }
+        
+        success, response, status = await self.make_request(
+            "POST", "/bookings/create", booking_data, headers=headers, expect_status=200
         )
         
-        # Test wrong password
-        success_wrong, _, status_wrong = await self.make_request(
-            "POST", "/auth/login", 
-            {"email": test_email, "password": wrong_password}, 
-            expect_status=401
+        if not success or not response.get("success"):
+            self.log_test("Verify QR Code (Driver)", False, "Failed to create new booking for QR test")
+            return
+        
+        new_qr_data = response["booking"].get("qr_data")
+        new_booking_id = response["booking"].get("id")
+        
+        if not new_qr_data or not self.driver_token:
+            self.log_test("Verify QR Code (Driver)", False, "Missing QR data or driver token")
+            return
+        
+        # Now verify QR code as driver
+        driver_headers = {"Authorization": f"Bearer {self.driver_token}"}
+        qr_test_data = {"qr_data": new_qr_data}
+        
+        success, response, status = await self.make_request(
+            "POST", "/bookings/verify-qr", qr_test_data, headers=driver_headers, expect_status=200
         )
         
-        if success_correct and success_wrong:
-            self.log_test("Password Hashing", True, 
-                        "Password hashing and verification working correctly")
+        if success:
+            if (response.get("success") and 
+                response.get("message") == "Booking verified successfully" and 
+                "booking" in response):
+                
+                booking = response["booking"]
+                if booking.get("status") == "active":
+                    self.log_test("Verify QR Code (Driver)", True, 
+                                f"QR code verified successfully, booking {new_booking_id} status changed to active")
+                else:
+                    self.log_test("Verify QR Code (Driver)", False, 
+                                f"Booking status not changed to active: {booking.get('status')}")
+            else:
+                self.log_test("Verify QR Code (Driver)", False, 
+                            f"Unexpected response: {response}")
         else:
-            details = []
-            if not success_correct:
-                details.append("correct password failed")
-            if not success_wrong:
-                details.append(f"wrong password didn't return 401 (got {status_wrong})")
-            
-            self.log_test("Password Hashing", False, 
-                        f"Password hashing issues: {', '.join(details)}")
+            self.log_test("Verify QR Code (Driver)", False, 
+                        f"QR verification failed with status {status}", response)
     
     async def run_all_tests(self):
         """Run all authentication tests"""
