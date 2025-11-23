@@ -11,6 +11,42 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
   const [routeData, setRouteData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch real ride estimates from backend
+  useEffect(() => {
+    const fetchEstimates = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/rides/estimate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            pickup_address: bookingDetails.pickup,
+            pickup_lat: 37.7749, // Mock coordinates - should come from geocoding
+            pickup_lon: -122.4194,
+            destination_address: bookingDetails.destination,
+            destination_lat: 37.7849,
+            destination_lon: -122.4094
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          setRideEstimates(data.data.estimates);
+          setRouteData(data.data.route);
+        }
+      } catch (error) {
+        console.error('Failed to fetch estimates:', error);
+        // Fallback to mock data
+        setRideEstimates(mockRideTypes);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEstimates();
+  }, [bookingDetails]);
+
   const handleRideSelect = (rideType) => {
     setSelectedRide(rideType);
     onSelectRide(rideType);
