@@ -96,7 +96,6 @@ const RideOptions = ({ bookingDetails, onSelectRide, onBack }) => {
 
         {/* Ride Options */}
         <div>
-
           {loading ? (
             <div className="text-center py-8">
               <div className="text-lg">Loading ride options...</div>
