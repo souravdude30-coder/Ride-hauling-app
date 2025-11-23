@@ -78,8 +78,13 @@ const ShuttleBooking = ({ onBack }) => {
           <p className="text-blue-800 text-sm">Book your daily commute up to 7 days in advance. Fixed routes with comfortable AC buses, live tracking, and affordable pricing.</p>
         </div>
 
-        <div className="space-y-4">
-          {mockShuttleRoutes.map((route) => (
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="text-lg">Loading routes...</div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {shuttleRoutes.map((route) => (
             <Card key={route.id} className="p-6 cursor-pointer hover:shadow-md transition-shadow border-2 hover:border-blue-500"
                   onClick={() => handleRouteSelect(route)}>
               <div className="flex justify-between items-start mb-4">
