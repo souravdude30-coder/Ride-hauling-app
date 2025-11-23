@@ -18,7 +18,7 @@ export const useAuth = () => {
 
   const verifyToken = async (token) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/auth/verify`, {
+      const response = await fetch(`${BACKEND_URL}/api/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -26,7 +26,7 @@ export const useAuth = () => {
 
       if (response.ok) {
         const userData = await response.json();
-        setUser(userData.user);
+        setUser(userData);
       } else {
         localStorage.removeItem('admin_token');
       }
@@ -51,11 +51,11 @@ export const useAuth = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('admin_token', data.token);
+        localStorage.setItem('admin_token', data.access_token);
         setUser(data.user);
         return { success: true };
       } else {
-        return { success: false, error: data.message || 'Login failed' };
+        return { success: false, error: data.detail || 'Login failed' };
       }
     } catch (error) {
       console.error('Login error:', error);
