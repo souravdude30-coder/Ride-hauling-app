@@ -12,7 +12,7 @@ import UberShare from "./components/UberShare";
 import { Toaster } from "./components/ui/toaster";
 
 const Home = () => {
-  const [currentScreen, setCurrentScreen] = useState('booking'); // booking, options, tracking
+  const [currentScreen, setCurrentScreen] = useState('home'); // home, booking, options, tracking
   const [bookingDetails, setBookingDetails] = useState(null);
   const [selectedRide, setSelectedRide] = useState(null);
 
