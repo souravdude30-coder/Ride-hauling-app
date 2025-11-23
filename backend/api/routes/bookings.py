@@ -151,7 +151,7 @@ async def verify_qr(
     request: VerifyQRRequest,
     current_user: User = Depends(get_current_user)
 ):
-    \"\"\"Verify QR code for booking (Driver only)\"\"\"
+    """Verify QR code for booking (Driver only)"""
     
     # Check if user is a driver
     if Permission.PASSENGER_READ not in current_user.permissions:
