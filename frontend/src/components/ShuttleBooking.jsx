@@ -117,7 +117,7 @@ const ShuttleBooking = ({ onBack }) => {
               </div>
 
               <div className="flex flex-wrap gap-2 mb-4">
-                {route.amenities.map((amenity, index) => (
+                {(route.amenities || []).map((amenity, index) => (
                   <Badge key={index} variant="secondary" className="text-xs">
                     {amenity === 'WiFi' && <Wifi className="w-3 h-3 mr-1" />}
                     {amenity === 'USB Charging' && <Zap className="w-3 h-3 mr-1" />}
