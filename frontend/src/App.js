@@ -9,6 +9,9 @@ import ShuttleBooking from "./components/ShuttleBooking";
 import ShuttleTracking from "./components/ShuttleTracking";
 import ReserveRide from "./components/ReserveRide";
 import UberShare from "./components/UberShare";
+import BikeBooking from "./components/BikeBooking";
+import TotoBooking from "./components/TotoBooking";
+import DeliveryBooking from "./components/DeliveryBooking";
 import { Toaster } from "./components/ui/toaster";
 
 const Home = () => {
