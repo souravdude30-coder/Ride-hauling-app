@@ -17,8 +17,12 @@ const ShuttleBooking = ({ onBack }) => {
   const [bookingData, setBookingData] = useState(null);
   const [userToken, setUserToken] = useState(null);
 
-  // Fetch shuttle routes on component mount
+  // Fetch shuttle routes and user token on component mount
   useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('user_token') || localStorage.getItem('passenger_token');
+    setUserToken(token);
+
     const fetchRoutes = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/shuttles/routes`);
