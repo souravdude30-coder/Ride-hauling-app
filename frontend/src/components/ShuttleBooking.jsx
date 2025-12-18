@@ -329,10 +329,11 @@ const ShuttleBooking = ({ onBack }) => {
         {selectedTimeSlot && (
           <div className="mt-6">
             <Button 
-              onClick={() => handleTimeSelect(selectedTimeSlot)}
+              onClick={handleConfirmBooking}
+              disabled={loading}
               className="w-full bg-black text-white hover:bg-gray-800"
             >
-              Confirm booking for ₹{selectedRoute.price}
+              {loading ? 'Creating booking...' : `Confirm booking for ₹${selectedRoute.price}`}
             </Button>
           </div>
         )}
