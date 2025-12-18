@@ -358,12 +358,28 @@ const ShuttleBooking = ({ onBack }) => {
             <Button 
               onClick={handleConfirmBooking}
               disabled={loading}
-              className="w-full bg-black text-white hover:bg-gray-800"
+              className="w-full bg-black text-white hover:bg-gray-800 disabled:bg-gray-400"
             >
               {loading ? 'Creating booking...' : `Confirm booking for ₹${selectedRoute.price}`}
             </Button>
           </div>
         )}
+      </div>
+    );
+  }
+  
+  // Show processing screen
+  if (bookingStep === 'confirm' || loading) {
+    return (
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">⏳</div>
+          <h2 className="text-2xl font-bold text-gray-600 mb-2">Processing...</h2>
+          <p className="text-gray-600 mb-6">Please wait while we create your booking</p>
+          <div className="animate-pulse">
+            <div className="h-2 bg-gray-200 rounded w-3/4 mx-auto"></div>
+          </div>
+        </div>
       </div>
     );
   }
