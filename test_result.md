@@ -209,6 +209,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ BOOKING SYSTEM WITH QR & OTP FULLY FUNCTIONAL: Fixed timezone-aware datetime issues in booking creation. Booking creation with pass consumption working (6-digit OTP generated, base64 QR code created). Driver OTP verification working correctly. Driver QR code verification working with booking status change to 'active'. Booking completion by driver working. Bulk booking for corporate admins working (₹2000 for 2-day 10-capacity booking). All booking endpoints returning proper responses."
+      - working: true
+        agent: "testing"
+        comment: "✅ SHUTTLE BOOKING FLOW VERIFIED: Tested specific shuttle booking flow as requested in review. Login as passenger@gmail.com successful. Retrieved shuttle routes (3 routes available). Created booking with pickup_location='DLF Phase 1', dropoff_location='Connaught Place', journey_date=tomorrow 8:00 AM, route_id=first route from /api/shuttles/routes. Booking response includes all required fields: booking.id, booking.otp (6 digits: 665782), booking.qr_code (valid base64 PNG, 816 bytes), booking.qr_data, booking.status='confirmed'. QR code format verified as valid PNG with proper base64 encoding. All test scenarios passed (4/4 - 100% success rate)."
 
 frontend:
   - task: "Master Admin App Authentication"
