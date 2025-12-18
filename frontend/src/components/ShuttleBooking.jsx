@@ -55,6 +55,49 @@ const ShuttleBooking = ({ onBack }) => {
     setBookingStep('confirm');
   };
 
+  const handleConfirmBooking = async () => {
+    setLoading(true);
+    
+    try {
+      // Calculate journey date
+      const selectedDayData = getNextSevenDays().find(d => d.id === selectedDate);
+      const journeyDate = new Date(selectedDayData.date);
+      const [hours, minutes] = selectedTimeSlot.time.split(':');
+      journeyDate.setHours(parseInt(hours), parseInt(minutes), 0);
+
+      // Create booking
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/bookings/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
+        body: JSON.stringify({
+          pickup_location: selectedPickup.name,
+          dropoff_location: selectedDrop.name,
+          journey_date: journeyDate.toISOString(),
+          shuttle_id: selectedRoute.shuttle_id,
+          route_id: selectedRoute.id,
+          pass_id: null // Can be updated to use pass if available
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success && data.booking) {
+        setBookingData(data.booking);
+        setBookingStep('ticket');
+      } else {
+        alert('Booking failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert('Booking failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getNextSevenDays = () => {
     const days = [];
     for (let i = 0; i < 7; i++) {
