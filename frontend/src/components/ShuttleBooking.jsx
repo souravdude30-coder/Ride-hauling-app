@@ -341,45 +341,108 @@ const ShuttleBooking = ({ onBack }) => {
     );
   }
 
-  return (
-    <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
-      <div className="text-center">
-        <div className="text-6xl mb-4">✅</div>
-        <h2 className="text-2xl font-bold text-green-600 mb-2">Booking Confirmed!</h2>
-        <p className="text-gray-600 mb-6">Your shuttle seat has been reserved</p>
-        
-        <div className="bg-gray-50 p-4 rounded-lg mb-6 text-left">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-gray-600">Route:</span>
-              <div className="font-medium">{selectedRoute.name}</div>
-            </div>
-            <div>
-              <span className="text-gray-600">Time:</span>
-              <div className="font-medium">{selectedTimeSlot.time}</div>
-            </div>
-            <div>
-              <span className="text-gray-600">From:</span>
-              <div className="font-medium">{selectedPickup.name}</div>
-            </div>
-            <div>
-              <span className="text-gray-600">To:</span>
-              <div className="font-medium">{selectedDrop.name}</div>
+  // Ticket display with QR code and OTP
+  if (bookingStep === 'ticket' && bookingData) {
+    return (
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+        <div className="text-center mb-6">
+          <div className="text-6xl mb-4">🎫</div>
+          <h2 className="text-2xl font-bold text-green-600 mb-2">Digital Ticket</h2>
+          <p className="text-gray-600">Show this to the driver</p>
+        </div>
+
+        {/* QR Code Display */}
+        <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-lg mb-6 border-2 border-blue-200">
+          <div className="text-center mb-4">
+            <h3 className="font-bold text-lg text-gray-900 mb-2">Scan QR Code</h3>
+            <p className="text-sm text-gray-600">Driver will scan this code to verify your ticket</p>
+          </div>
+          
+          <div className="bg-white p-4 rounded-lg inline-block mx-auto">
+            <img 
+              src={`data:image/png;base64,${bookingData.qr_code}`}
+              alt="Booking QR Code"
+              className="w-64 h-64 mx-auto"
+            />
+          </div>
+        </div>
+
+        {/* OTP Display */}
+        <div className="bg-gradient-to-br from-green-50 to-teal-50 p-6 rounded-lg mb-6 border-2 border-green-200">
+          <div className="text-center">
+            <h3 className="font-bold text-lg text-gray-900 mb-2">Verification OTP</h3>
+            <p className="text-sm text-gray-600 mb-4">Or share this 6-digit code with driver</p>
+            
+            <div className="bg-white px-8 py-6 rounded-xl shadow-inner inline-block">
+              <div className="text-5xl font-bold text-green-600 tracking-widest font-mono">
+                {bookingData.otp}
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Booking Details */}
+        <div className="bg-gray-50 p-6 rounded-lg mb-6">
+          <h3 className="font-semibold mb-4 text-gray-900">Booking Details</h3>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="text-gray-600">Route:</span>
+              <div className="font-medium text-gray-900">{selectedRoute.name}</div>
+            </div>
+            <div>
+              <span className="text-gray-600">Time:</span>
+              <div className="font-medium text-gray-900">{selectedTimeSlot.time}</div>
+            </div>
+            <div>
+              <span className="text-gray-600">From:</span>
+              <div className="font-medium text-gray-900">{selectedPickup.name}</div>
+            </div>
+            <div>
+              <span className="text-gray-600">To:</span>
+              <div className="font-medium text-gray-900">{selectedDrop.name}</div>
+            </div>
+            <div>
+              <span className="text-gray-600">Booking ID:</span>
+              <div className="font-medium text-gray-900 text-xs">{bookingData.id.substring(0, 12)}...</div>
+            </div>
+            <div>
+              <span className="text-gray-600">Status:</span>
+              <div className="font-medium text-green-600 capitalize">{bookingData.status}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
         <div className="space-y-3">
-          <Button className="w-full bg-green-600 text-white hover:bg-green-700">
-            Track Live Bus
+          <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+            📍 Track Live Bus
           </Button>
-          <Button variant="outline" className="w-full">
-            View Ticket Details
+          <Button className="w-full bg-gray-600 text-white hover:bg-gray-700">
+            💾 Save Ticket
           </Button>
-          <Button variant="ghost" onClick={onBack} className="w-full">
-            Book Another Ride
+          <Button variant="outline" className="w-full" onClick={onBack}>
+            ← Book Another Shuttle
           </Button>
         </div>
+
+        {/* Important Notes */}
+        <div className="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+          <p className="text-sm text-yellow-800">
+            <strong>Important:</strong> This QR code is single-use and will expire after verification. 
+            Please arrive 5 minutes before departure time.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback for old confirmation screen
+  return (
+    <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+      <div className="text-center">
+        <div className="text-6xl mb-4">⏳</div>
+        <h2 className="text-2xl font-bold text-gray-600 mb-2">Processing...</h2>
+        <p className="text-gray-600 mb-6">Please wait while we create your booking</p>
       </div>
     </div>
   );
