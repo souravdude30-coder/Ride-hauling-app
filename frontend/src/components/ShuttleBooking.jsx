@@ -59,6 +59,32 @@ const ShuttleBooking = ({ onBack }) => {
     setLoading(true);
     
     try {
+      // Check if user is logged in
+      if (!userToken) {
+        // Auto-login as passenger for demo
+        const loginResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: 'passenger@gmail.com',
+            password: 'Pass@123'
+          })
+        });
+        
+        const loginData = await loginResponse.json();
+        
+        if (loginData.access_token) {
+          localStorage.setItem('passenger_token', loginData.access_token);
+          setUserToken(loginData.access_token);
+        } else {
+          alert('Please login to book a shuttle');
+          setLoading(false);
+          return;
+        }
+      }
+
       // Calculate journey date
       const selectedDayData = getNextSevenDays().find(d => d.id === selectedDate);
       const journeyDate = new Date(selectedDayData.date);
@@ -66,11 +92,12 @@ const ShuttleBooking = ({ onBack }) => {
       journeyDate.setHours(parseInt(hours), parseInt(minutes), 0);
 
       // Create booking
+      const token = userToken || localStorage.getItem('passenger_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/bookings/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userToken}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           pickup_location: selectedPickup.name,
@@ -88,7 +115,7 @@ const ShuttleBooking = ({ onBack }) => {
         setBookingData(data.booking);
         setBookingStep('ticket');
       } else {
-        alert('Booking failed. Please try again.');
+        alert('Booking failed: ' + (data.detail || 'Please try again'));
       }
     } catch (error) {
       console.error('Booking error:', error);
