@@ -11,9 +11,11 @@ const ShuttleBooking = ({ onBack }) => {
   const [selectedDrop, setSelectedDrop] = useState(null);
   const [selectedDate, setSelectedDate] = useState('today');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
-  const [bookingStep, setBookingStep] = useState('route'); // route, pickup-drop, time, confirm
+  const [bookingStep, setBookingStep] = useState('route'); // route, pickup-drop, time, confirm, ticket
   const [shuttleRoutes, setShuttleRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bookingData, setBookingData] = useState(null);
+  const [userToken, setUserToken] = useState(null);
 
   // Fetch shuttle routes on component mount
   useEffect(() => {
