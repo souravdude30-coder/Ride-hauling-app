@@ -296,8 +296,10 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
-  stuck_tasks: []
+  current_focus:
+    - "Passenger App Shuttle Booking with QR & OTP"
+  stuck_tasks:
+    - "Passenger App Shuttle Booking with QR & OTP"
   test_all: false
   test_priority: "high_first"
 
@@ -316,3 +318,5 @@ agent_communication:
     message: "🎉 PAYMENT GATEWAY, SUBSCRIPTION PLANS & BOOKING SYSTEM TESTING COMPLETE! All 12 test scenarios passed (100% success rate). Fixed critical issues: Razorpay mock mode authentication, timezone-aware datetime comparisons, corporate admin permissions (added corporate:manage), QR verification status updates. Payment gateway working in mock mode with proper order creation (₹100→10000 paise) and verification. All 6 subscription plans available. Pass purchase and consumption working. Booking system with 6-digit OTP and base64 QR codes working. Driver verification (OTP/QR) working. Bulk operations for corporate admins working. System ready for production with real Razorpay keys."
   - agent: "testing"
     message: "✅ SHUTTLE BOOKING FLOW REVIEW REQUEST COMPLETED: Tested specific shuttle booking flow as requested. Successfully logged in as passenger@gmail.com/Pass@123. Retrieved shuttle routes from /api/shuttles/routes (3 routes available). Created shuttle booking with exact parameters: pickup_location='DLF Phase 1', dropoff_location='Connaught Place', journey_date=tomorrow 8:00 AM ISO format, shuttle_id=null, route_id=first route ID. Verified all required response fields: booking.id (UUID), booking.otp (6-digit: 665782), booking.qr_code (valid base64 PNG format, 816 bytes), booking.qr_data (booking info string), booking.status='confirmed'. QR code validated as proper PNG image with base64 encoding. All 4 test scenarios passed (100% success rate). System generating QR codes and OTPs correctly as requested."
+  - agent: "testing"
+    message: "❌ CRITICAL FRONTEND ISSUE FOUND: Passenger app React functionality broken. Frontend service compiling successfully but JavaScript event handlers not working. Shuttle button click not triggering state changes. Backend APIs working correctly (/api/shuttles/routes returns 3 routes). UI renders but React state management failing in production environment. This prevents testing of shuttle booking flow with QR code and OTP display. Requires immediate investigation of React build/runtime issues."
