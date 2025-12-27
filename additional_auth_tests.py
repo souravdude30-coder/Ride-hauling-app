@@ -7,7 +7,7 @@ import asyncio
 import aiohttp
 import json
 
-BASE_URL = "https://metrohail.preview.emergentagent.com/api"
+BASE_URL = "https://uber-clone-138.preview.emergentagent.com/api"
 
 async def test_edge_cases():
     """Test additional edge cases"""

@@ -13,7 +13,7 @@ from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
 
 # Test configuration
-BASE_URL = "https://metrohail.preview.emergentagent.com/api"
+BASE_URL = "https://uber-clone-138.preview.emergentagent.com/api"
 
 class ShuttleBookingTestSuite:
     def __init__(self):
