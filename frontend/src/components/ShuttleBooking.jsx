@@ -56,11 +56,16 @@ const ShuttleBooking = ({ onBack }) => {
   };
 
   const handleConfirmBooking = async () => {
+    console.log('🎫 Starting booking process...');
     setLoading(true);
+    setBookingStep('confirm'); // Show processing screen
     
     try {
       // Check if user is logged in
-      if (!userToken) {
+      let token = userToken || localStorage.getItem('passenger_token');
+      
+      if (!token) {
+        console.log('🔐 No token found, logging in...');
         // Auto-login as passenger for demo
         const loginResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
           method: 'POST',
@@ -74,13 +79,18 @@ const ShuttleBooking = ({ onBack }) => {
         });
         
         const loginData = await loginResponse.json();
+        console.log('🔐 Login response:', loginData);
         
         if (loginData.access_token) {
-          localStorage.setItem('passenger_token', loginData.access_token);
-          setUserToken(loginData.access_token);
+          token = loginData.access_token;
+          localStorage.setItem('passenger_token', token);
+          setUserToken(token);
+          console.log('✅ Login successful');
         } else {
+          console.error('❌ Login failed:', loginData);
           alert('Please login to book a shuttle');
           setLoading(false);
+          setBookingStep('time');
           return;
         }
       }
@@ -91,35 +101,44 @@ const ShuttleBooking = ({ onBack }) => {
       const [hours, minutes] = selectedTimeSlot.time.split(':');
       journeyDate.setHours(parseInt(hours), parseInt(minutes), 0);
 
+      const bookingPayload = {
+        pickup_location: selectedPickup.name,
+        dropoff_location: selectedDrop.name,
+        journey_date: journeyDate.toISOString(),
+        shuttle_id: selectedRoute.shuttle_id || null,
+        route_id: selectedRoute.id,
+        pass_id: null
+      };
+      
+      console.log('📤 Sending booking request:', bookingPayload);
+
       // Create booking
-      const token = userToken || localStorage.getItem('passenger_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/bookings/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          pickup_location: selectedPickup.name,
-          dropoff_location: selectedDrop.name,
-          journey_date: journeyDate.toISOString(),
-          shuttle_id: selectedRoute.shuttle_id,
-          route_id: selectedRoute.id,
-          pass_id: null // Can be updated to use pass if available
-        })
+        body: JSON.stringify(bookingPayload)
       });
 
+      console.log('📥 Booking response status:', response.status);
       const data = await response.json();
+      console.log('📥 Booking response data:', data);
       
-      if (data.success && data.booking) {
+      if (response.ok && data.success && data.booking) {
+        console.log('✅ Booking successful!');
         setBookingData(data.booking);
         setBookingStep('ticket');
       } else {
-        alert('Booking failed: ' + (data.detail || 'Please try again'));
+        console.error('❌ Booking failed:', data);
+        alert('Booking failed: ' + (data.detail || JSON.stringify(data)));
+        setBookingStep('time');
       }
     } catch (error) {
-      console.error('Booking error:', error);
-      alert('Booking failed. Please try again.');
+      console.error('❌ Booking error:', error);
+      alert('Booking failed: ' + error.message);
+      setBookingStep('time');
     } finally {
       setLoading(false);
     }
