@@ -250,6 +250,21 @@ frontend:
         agent: "testing"
         comment: "✅ CORPORATE ADMIN APP FULLY FUNCTIONAL: Login working with corporate@techcorp.com/Corp@123. Dashboard loads correctly with all navigation links (Dashboard, Shuttle Management, Employee Management, Route Management, Safety Center, Analytics). Role-based access control allows corporate_admin and fleet_manager roles. Token management working (corporate_token in localStorage). User info displays correctly with company name (Tech Corp). Logout redirects to login and clears token. Invalid credentials properly rejected with error messages. App runs on PORT 3002."
   
+  - task: "Passenger App Shuttle Booking with QR & OTP"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/ShuttleBooking.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Shuttle booking component implemented with complete flow: route selection, pickup/drop selection, time selection, booking confirmation, and ticket display with QR code and OTP."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE: React app JavaScript functionality not working properly. Frontend service running and compiling successfully, but React state management failing. Shuttle button click not triggering state change to show ShuttleBooking component. UI renders but onClick handlers not functioning. Backend API working (verified /api/shuttles/routes returns 3 routes correctly). Issue appears to be with React event handling or state management in production environment."
+  
   - task: "Driver App RBAC Integration"
     implemented: false
     working: "NA"
