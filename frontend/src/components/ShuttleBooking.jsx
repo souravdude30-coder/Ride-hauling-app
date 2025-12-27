@@ -1,37 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, MapPin, Clock, Users, Wifi, Zap, Calendar } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, MapPin, Clock, Users, Wifi, Zap, Calendar, AlertCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
 import { mockShuttleTimeSlots } from '../data/mock';
 
 const ShuttleBooking = ({ onBack }) => {
+  // --- State Management ---
+  const [bookingStep, setBookingStep] = useState('route'); 
+  const [shuttleRoutes, setShuttleRoutes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Selection State
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [selectedPickup, setSelectedPickup] = useState(null);
   const [selectedDrop, setSelectedDrop] = useState(null);
-  const [selectedDate, setSelectedDate] = useState('today');
+  const [selectedDateObj, setSelectedDateObj] = useState(new Date()); // Store actual Date object
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
-  const [bookingStep, setBookingStep] = useState('route'); // route, pickup-drop, time, confirm, ticket
-  const [shuttleRoutes, setShuttleRoutes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
   const [bookingData, setBookingData] = useState(null);
-  const [userToken, setUserToken] = useState(null);
+  const [userToken, setUserToken] = useState(localStorage.getItem('passenger_token'));
 
-  // Fetch shuttle routes and user token on component mount
+  // --- Helper: Date Generator ---
+  const getNextSevenDays = useCallback(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      return d;
+    });
+  }, []);
+
+  // --- API: Fetch Routes ---
   useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('user_token') || localStorage.getItem('passenger_token');
-    setUserToken(token);
-
     const fetchRoutes = async () => {
       try {
+        setLoading(true);
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/shuttles/routes`);
+        if (!response.ok) throw new Error('Failed to load shuttle routes');
         const data = await response.json();
-        if (data.success) {
-          setShuttleRoutes(data.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch shuttle routes:', error);
+        if (data.success) setShuttleRoutes(data.data);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -39,112 +49,255 @@ const ShuttleBooking = ({ onBack }) => {
     fetchRoutes();
   }, []);
 
+  // --- Navigation Handlers ---
   const handleRouteSelect = (route) => {
     setSelectedRoute(route);
+    // Reset downstream selections if user changes route
+    setSelectedPickup(null);
+    setSelectedDrop(null);
     setBookingStep('pickup-drop');
   };
 
-  const handleLocationSelect = (pickup, drop) => {
-    setSelectedPickup(pickup);
-    setSelectedDrop(drop);
-    setBookingStep('time');
-  };
-
-  const handleTimeSelect = (timeSlot) => {
-    setSelectedTimeSlot(timeSlot);
-    setBookingStep('confirm');
-  };
-
   const handleConfirmBooking = async () => {
-    console.log('🎫 Starting booking process...');
     setLoading(true);
-    setBookingStep('confirm'); // Show processing screen
-    
     try {
-      // Check if user is logged in
-      let token = userToken || localStorage.getItem('passenger_token');
-      
-      if (!token) {
-        console.log('🔐 No token found, logging in...');
-        // Auto-login as passenger for demo
+      let currentToken = userToken;
+
+      // 1. Production-ready Auth Check
+      if (!currentToken) {
         const loginResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: 'passenger@gmail.com',
-            password: 'Pass@123'
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: 'passenger@gmail.com', password: 'Pass@123' })
         });
-        
         const loginData = await loginResponse.json();
-        console.log('🔐 Login response:', loginData);
-        
         if (loginData.access_token) {
-          token = loginData.access_token;
-          localStorage.setItem('passenger_token', token);
-          setUserToken(token);
-          console.log('✅ Login successful');
+          currentToken = loginData.access_token;
+          localStorage.setItem('passenger_token', currentToken);
+          setUserToken(currentToken);
         } else {
-          console.error('❌ Login failed:', loginData);
-          alert('Please login to book a shuttle');
-          setLoading(false);
-          setBookingStep('time');
-          return;
+          throw new Error('Please login to continue');
         }
       }
 
-      // Calculate journey date
-      const selectedDayData = getNextSevenDays().find(d => d.id === selectedDate);
-      const journeyDate = new Date(selectedDayData.date);
+      // 2. Precise Date/Time Construction
+      const journeyDate = new Date(selectedDateObj);
       const [hours, minutes] = selectedTimeSlot.time.split(':');
-      journeyDate.setHours(parseInt(hours), parseInt(minutes), 0);
+      journeyDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
+      // 3. Booking Request
       const bookingPayload = {
         pickup_location: selectedPickup.name,
         dropoff_location: selectedDrop.name,
         journey_date: journeyDate.toISOString(),
-        shuttle_id: selectedRoute.shuttle_id || null,
-        route_id: selectedRoute.id,
-        pass_id: null
+        shuttle_id: selectedRoute.shuttle_id,
+        route_id: selectedRoute.id
       };
-      
-      console.log('📤 Sending booking request:', bookingPayload);
 
-      // Create booking
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/bookings/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         },
         body: JSON.stringify(bookingPayload)
       });
 
-      console.log('📥 Booking response status:', response.status);
       const data = await response.json();
-      console.log('📥 Booking response data:', data);
-      
-      if (response.ok && data.success && data.booking) {
-        console.log('✅ Booking successful!');
+      if (response.ok && data.success) {
         setBookingData(data.booking);
         setBookingStep('ticket');
       } else {
-        console.error('❌ Booking failed:', data);
-        alert('Booking failed: ' + (data.detail || JSON.stringify(data)));
-        setBookingStep('time');
+        throw new Error(data.detail || 'Booking failed');
       }
-    } catch (error) {
-      console.error('❌ Booking error:', error);
-      alert('Booking failed: ' + error.message);
+    } catch (err) {
+      alert(err.message);
       setBookingStep('time');
     } finally {
       setLoading(false);
     }
   };
 
-  const getNextSevenDays = () => {
+  // --- Sub-Views ---
+
+  if (loading && bookingStep === 'route') {
+    return <div className="p-10 text-center animate-pulse">Searching for available shuttles...</div>;
+  }
+
+  if (error) {
+    return (
+      <Card className="p-6 border-red-200 bg-red-50 text-center">
+        <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-2" />
+        <h3 className="text-red-800 font-bold">Connection Error</h3>
+        <p className="text-red-600 mb-4">{error}</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </Card>
+    );
+  }
+
+  // View: Route List
+  if (bookingStep === 'route') {
+    return (
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" onClick={onBack}><ChevronLeft className="mr-2" /> Back</Button>
+          <h2 className="text-2xl font-bold ml-4">Select Route</h2>
+        </div>
+        
+        {shuttleRoutes.length === 0 ? (
+          <div className="text-gray-500 text-center py-10">No routes active right now.</div>
+        ) : (
+          <div className="space-y-4">
+            {shuttleRoutes.map(route => (
+              <Card key={route.id} className="p-4 hover:border-blue-500 cursor-pointer" onClick={() => handleRouteSelect(route)}>
+                <div className="flex justify-between">
+                  <h3 className="font-bold text-lg">{route.name}</h3>
+                  <span className="text-green-600 font-bold">₹{route.price}</span>
+                </div>
+                <div className="text-sm text-gray-500 flex gap-4 mt-2">
+                  <span className="flex items-center"><Clock className="w-4 h-4 mr-1"/> {route.duration_min}m</span>
+                  <span className="flex items-center"><Users className="w-4 h-4 mr-1"/> {route.capacity} seats</span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // View: Pickup & Drop
+  if (bookingStep === 'pickup-drop') {
+    return (
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+        <Button variant="ghost" onClick={() => setBookingStep('route')}><ChevronLeft /> Back</Button>
+        <h2 className="text-xl font-bold mt-4 mb-6">Where are you heading?</h2>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="text-xs font-bold uppercase text-gray-400">Pickup Point</label>
+            <div className="grid grid-cols-1 gap-2 mt-2">
+              {selectedRoute.pickup_hotspots.map(p => (
+                <div 
+                  key={p.id} 
+                  className={`p-3 border rounded-lg cursor-pointer ${selectedPickup?.id === p.id ? 'bg-blue-50 border-blue-500' : ''}`}
+                  onClick={() => setSelectedPickup(p)}
+                >
+                  {p.name}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold uppercase text-gray-400">Drop Point</label>
+            <div className="grid grid-cols-1 gap-2 mt-2">
+              {selectedRoute.drop_hotspots.map(d => (
+                <div 
+                  key={d.id} 
+                  className={`p-3 border rounded-lg cursor-pointer ${selectedDrop?.id === d.id ? 'bg-blue-50 border-blue-500' : ''}`}
+                  onClick={() => setSelectedDrop(d)}
+                >
+                  {d.name}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <Button 
+          className="w-full mt-8" 
+          disabled={!selectedPickup || !selectedDrop}
+          onClick={() => setBookingStep('time')}
+        >
+          Confirm Locations
+        </Button>
+      </div>
+    );
+  }
+
+  // View: Date & Time Selection
+  if (bookingStep === 'time') {
+    return (
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+        <Button variant="ghost" onClick={() => setBookingStep('pickup-drop')}><ChevronLeft /> Back</Button>
+        <h2 className="text-xl font-bold mt-4 mb-6">Select Schedule</h2>
+
+        <div className="mb-8">
+           <div className="flex gap-2 overflow-x-auto pb-2">
+            {getNextSevenDays().map((date, i) => (
+              <button
+                key={i}
+                onClick={() => setSelectedDateObj(date)}
+                className={`flex-shrink-0 p-3 rounded-lg border text-center min-w-[80px] ${
+                  selectedDateObj.toDateString() === date.toDateString() ? 'bg-blue-600 text-white' : 'bg-gray-50'
+                }`}
+              >
+                <div className="text-xs">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                <div className="font-bold">{date.getDate()}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {mockShuttleTimeSlots.map(slot => (
+            <div 
+              key={slot.id}
+              className={`p-4 border rounded-lg cursor-pointer ${selectedTimeSlot?.id === slot.id ? 'border-blue-500 bg-blue-50' : ''}`}
+              onClick={() => setSelectedTimeSlot(slot)}
+            >
+              <div className="font-bold">{slot.time}</div>
+              <div className="text-xs text-gray-500">{slot.availableSeats} seats left</div>
+            </div>
+          ))}
+        </div>
+
+        <Button 
+          className="w-full mt-8 bg-black text-white" 
+          disabled={!selectedTimeSlot || loading}
+          onClick={handleConfirmBooking}
+        >
+          {loading ? 'Processing...' : 'Book Now'}
+        </Button>
+      </div>
+    );
+  }
+
+  // View: Success Ticket
+  if (bookingStep === 'ticket' && bookingData) {
+    return (
+      <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-2xl overflow-hidden border">
+        <div className="bg-green-600 p-4 text-center text-white">
+          <h2 className="text-xl font-bold">Booking Confirmed!</h2>
+          <p className="text-sm opacity-90">Ticket ID: {bookingData.id.slice(0,8)}</p>
+        </div>
+        
+        <div className="p-6 text-center">
+          <div className="bg-white p-4 border-2 border-dashed rounded-lg inline-block mb-4">
+             <img src={`data:image/png;base64,${bookingData.qr_code}`} alt="QR" className="w-48 h-48" />
+          </div>
+          
+          <div className="mb-6">
+            <span className="text-gray-400 text-xs uppercase font-bold">Driver Verification OTP</span>
+            <div className="text-4xl font-mono font-black tracking-widest text-blue-700">{bookingData.otp}</div>
+          </div>
+
+          <div className="text-left space-y-3 border-t pt-4 text-sm">
+            <div className="flex justify-between"><span className="text-gray-500">Pick-up</span><strong>{selectedPickup.name}</strong></div>
+            <div className="flex justify-between"><span className="text-gray-500">Time</span><strong>{selectedTimeSlot.time}</strong></div>
+          </div>
+
+          <Button className="w-full mt-6" variant="outline" onClick={onBack}>Done</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+export default ShuttleBooking;
     const days = [];
     for (let i = 0; i < 7; i++) {
       const date = new Date();
