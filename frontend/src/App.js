@@ -99,7 +99,7 @@ const Home = () => {
               </div>
               
               <div className="bg-gray-100 rounded-2xl p-4 aspect-square flex flex-col items-center justify-center cursor-pointer"
-                   onClick={() => setCurrentScreen('shuttle')}>
+                   onClick={() => { console.log('🚌 Shuttle clicked! Changing to shuttle screen...'); setCurrentScreen('shuttle'); }}>
                 <div className="text-2xl mb-2">🚌</div>
                 <span className="text-sm font-medium text-center">Shuttle</span>
               </div>
