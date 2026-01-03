@@ -14,6 +14,8 @@ import TotoBooking from "./components/TotoBooking";
 import DeliveryBooking from "./components/DeliveryBooking";
 import { Button } from "./components/ui/button";
 import { Toaster } from "./components/ui/toaster";
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 const Home = () => {
   const [currentScreen, setCurrentScreen] = useState('home'); // home, booking, options, tracking
@@ -241,6 +243,8 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<Home />}>
             <Route index element={<Home />} />
           </Route>
