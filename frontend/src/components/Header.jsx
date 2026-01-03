@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, User, Globe } from 'lucide-react';
+import { Menu, User, Globe, Chrome, Facebook } from 'lucide-react';
 import { Button } from './ui/button';
 import {
   DropdownMenu,
@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
-const Header = () => {
+const Header = ({ user, onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -38,15 +38,40 @@ const Header = () => {
           <Globe className="w-4 h-4 mr-2" />
           EN
         </Button>
-        <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
-          Help
-        </Button>
-        <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
-          Log in
-        </Button>
-        <Button variant="outline" size="sm" className="bg-white text-black hover:bg-gray-100">
-          Sign up
-        </Button>
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+                <User className="w-4 h-4 mr-2" />
+                {user.name}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white text-black">
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={onLogout}>Log Out</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <>
+            <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+              Help
+            </Button>
+            <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
+              Log in
+            </Button>
+            <Button variant="outline" size="sm" className="bg-white text-black hover:bg-gray-100">
+              Sign up
+            </Button>
+            <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800" onClick={() => alert('Google Login')}>
+              <Chrome className="w-4 h-4 mr-2" />
+              Google
+            </Button>
+            <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800" onClick={() => alert('Facebook Login')}>
+              <Facebook className="w-4 h-4 mr-2" />
+              Facebook
+            </Button>
+          </>
+        )}
         
         <Button
           variant="ghost"

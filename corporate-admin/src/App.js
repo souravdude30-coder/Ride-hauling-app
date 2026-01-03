@@ -8,6 +8,7 @@ import EmployeeManagement from './components/EmployeeManagement';
 import RouteManagement from './components/RouteManagement';
 import SafetyCenter from './components/SafetyCenter';
 import Analytics from './components/Analytics';
+import BulkBooking from './components/BulkBooking';
 import { Toaster } from './components/ui/toaster';
 import { useAuth } from './hooks/useAuth';
 
@@ -89,6 +90,9 @@ function App() {
               <a href="/analytics" className="block px-6 py-3 hover:bg-green-800">
                 📈 Analytics
               </a>
+              <a href="/bulk-booking" className="block px-6 py-3 hover:bg-green-800">
+                📦 Bulk Booking
+              </a>
             </nav>
 
             {/* Company Info */}
@@ -130,6 +134,7 @@ function App() {
               <Route path="/routes" element={<RouteManagement user={user} />} />
               <Route path="/safety" element={<SafetyCenter user={user} />} />
               <Route path="/analytics" element={<Analytics user={user} />} />
+              <Route path="/bulk-booking" element={<BulkBooking />} />
             </Routes>
           </div>
         </div>

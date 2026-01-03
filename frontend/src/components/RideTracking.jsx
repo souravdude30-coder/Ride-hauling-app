@@ -22,7 +22,7 @@ const RideTracking = ({ ride = mockCurrentRide, onRideComplete }) => {
             return 600; // 10 minutes for ride
           } else if (currentStatus === 'in_progress') {
             setCurrentStatus('completed');
-            onRideComplete && onRideComplete();
+            onRideComplete && onRideComplete(ride);
             return 0;
           }
         }

@@ -25,6 +25,7 @@ function App() {
   const [drivers, setDrivers] = useState([]);
   const [rides, setRides] = useState([]);
   const [shuttles, setShuttles] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
 
   useEffect(() => {
     fetchFleetData();
@@ -130,6 +131,34 @@ function App() {
         }
       ]);
 
+      // Mock vehicles data
+      setVehicles([
+        {
+          id: 'vehicle_1',
+          licensePlate: 'DL1C AB1234',
+          model: 'Maruti Dzire',
+          status: 'active',
+          driverId: 'driver_1',
+          currentLocation: { lat: 37.7749, lon: -122.4194 }
+        },
+        {
+          id: 'vehicle_2',
+          licensePlate: 'HR26 CD5678',
+          model: 'Hyundai Creta',
+          status: 'maintenance',
+          driverId: null,
+          currentLocation: null
+        },
+        {
+          id: 'vehicle_3',
+          licensePlate: 'UP16 EF9012',
+          model: 'Toyota Innova',
+          status: 'active',
+          driverId: 'driver_2',
+          currentLocation: { lat: 37.7849, lon: -122.4094 }
+        }
+      ]);
+
     } catch (error) {
       console.error('Failed to fetch fleet data:', error);
     }
@@ -149,6 +178,7 @@ function App() {
                   drivers={drivers}
                   rides={rides}
                   shuttles={shuttles}
+                  vehicles={vehicles}
                 />
               } 
             />

@@ -4,7 +4,7 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 
-const FleetDashboard = ({ fleetData, drivers, rides, shuttles }) => {
+const FleetDashboard = ({ fleetData, drivers, rides, shuttles, vehicles }) => {
   const onlinePercentage = fleetData.totalDrivers > 0 
     ? Math.round((fleetData.onlineDrivers / fleetData.totalDrivers) * 100) 
     : 0;
@@ -190,6 +190,44 @@ const FleetDashboard = ({ fleetData, drivers, rides, shuttles }) => {
         </div>
         <Button variant="outline" className="w-full mt-4">
           Manage Shuttles
+        </Button>
+      </Card>
+
+      {/* Vehicle Management */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold flex items-center">
+            <Car className="w-5 h-5 mr-2" />
+            Vehicle Management
+          </h3>
+          <Badge variant="secondary">{vehicles.length} vehicles</Badge>
+        </div>
+        <div className="space-y-3 max-h-64 overflow-y-auto">
+          {vehicles.map((vehicle) => (
+            <div key={vehicle.id} className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className={`w-3 h-3 rounded-full ${
+                  vehicle.status === 'active' ? 'bg-green-500' :
+                  vehicle.status === 'maintenance' ? 'bg-yellow-500' : 'bg-gray-400'
+                }`}></div>
+                <div>
+                  <div className="font-medium">{vehicle.licensePlate}</div>
+                  <div className="text-sm text-gray-600">{vehicle.model}</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <Badge 
+                  variant={vehicle.status === 'active' ? 'default' : 'secondary'}
+                  className={vehicle.status === 'active' ? 'bg-green-100 text-green-800' : ''}
+                >
+                  {vehicle.status}
+                </Badge>
+              </div>
+            </div>
+          ))}
+        </div>
+        <Button variant="outline" className="w-full mt-4">
+          Manage Vehicles
         </Button>
       </Card>
 

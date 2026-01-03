@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Navigation, DollarSign, Clock, Star, Menu, Power } from 'lucide-react';
+import { MapPin, Navigation, DollarSign, Clock, Star, Menu, Power, History, Bell } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
@@ -21,6 +21,8 @@ const DriverDashboard = ({
   });
 
   const [nearbyRequests, setNearbyRequests] = useState([]);
+  const [rideHistory, setRideHistory] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     // Simulate fetching today's stats
@@ -30,6 +32,40 @@ const DriverDashboard = ({
       hours: 6.5,
       rating: 4.8
     });
+
+    // Simulate fetching ride history
+    setRideHistory([
+      {
+        id: 'ride_1',
+        date: '2024-01-02',
+        pickup: '123 Main St',
+        destination: '456 Oak Ave',
+        fare: 25.50,
+      },
+      {
+        id: 'ride_2',
+        date: '2024-01-01',
+        pickup: '789 Pine Ln',
+        destination: '101 Elm Rd',
+        fare: 15.00,
+      },
+    ]);
+
+    // Simulate fetching notifications
+    setNotifications([
+      {
+        id: 'notif_1',
+        type: 'payment',
+        message: 'Your weekly earnings have been processed.',
+        timestamp: '2 hours ago',
+      },
+      {
+        id: 'notif_2',
+        type: 'update',
+        message: 'App update available. New features added!',
+        timestamp: '1 day ago',
+      },
+    ]);
 
     // Simulate nearby ride requests when online
     if (isOnline && !activeRide) {
@@ -189,6 +225,27 @@ const DriverDashboard = ({
           </Card>
         )}
 
+        {/* Ride History */}
+        {rideHistory.length > 0 && (
+          <Card className="p-4">
+            <h3 className="font-semibold mb-3 flex items-center">
+              <History className="w-4 h-4 mr-2 text-gray-600" />
+              Ride History
+            </h3>
+            <div className="space-y-3">
+              {rideHistory.map((ride) => (
+                <div key={ride.id} className="flex justify-between items-center border-b pb-2 last:border-b-0 last:pb-0">
+                  <div>
+                    <p className="text-sm font-medium">{ride.pickup} to {ride.destination}</p>
+                    <p className="text-xs text-gray-500">{ride.date}</p>
+                  </div>
+                  <p className="font-bold text-sm text-green-600">${ride.fare}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* Nearby Ride Requests */}
         {isOnline && !activeRide && nearbyRequests.length > 0 && (
           <div>
@@ -232,6 +289,24 @@ const DriverDashboard = ({
           </div>
         )}
 
+        {/* Notifications */}
+        {notifications.length > 0 && (
+          <Card className="p-4">
+            <h3 className="font-semibold mb-3 flex items-center">
+              <Bell className="w-4 h-4 mr-2 text-gray-600" />
+              Notifications
+            </h3>
+            <div className="space-y-3">
+              {notifications.map((notif) => (
+                <div key={notif.id} className="border-b pb-2 last:border-b-0 last:pb-0">
+                  <p className="text-sm font-medium">{notif.message}</p>
+                  <p className="text-xs text-gray-500">{notif.timestamp}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* No Requests Message */}
         {isOnline && !activeRide && nearbyRequests.length === 0 && (
           <Card className="p-6 text-center">
@@ -259,13 +334,25 @@ const DriverDashboard = ({
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" className="h-16" onClick={() => window.location.href = '/earnings'}>
+          <Button variant="outline" className="h-16" onClick={() => alert('Navigate to Earnings')}>
             <div className="text-center">
               <DollarSign className="w-5 h-5 mx-auto mb-1" />
               <span className="text-sm">Earnings</span>
             </div>
           </Button>
-          <Button variant="outline" className="h-16" onClick={() => window.location.href = '/profile'}>
+          <Button variant="outline" className="h-16" onClick={() => alert('Navigate to Ride History')}>
+            <div className="text-center">
+              <History className="w-5 h-5 mx-auto mb-1" />
+              <span className="text-sm">History</span>
+            </div>
+          </Button>
+          <Button variant="outline" className="h-16" onClick={() => alert('Navigate to Notifications')}>
+            <div className="text-center">
+              <Bell className="w-5 h-5 mx-auto mb-1" />
+              <span className="text-sm">Notifications</span>
+            </div>
+          </Button>
+          <Button variant="outline" className="h-16" onClick={() => alert('Navigate to Profile')}>
             <div className="text-center">
               <Star className="w-5 h-5 mx-auto mb-1" />
               <span className="text-sm">Profile</span>

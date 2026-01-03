@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
@@ -12,13 +12,16 @@ import UberShare from "./components/UberShare";
 import BikeBooking from "./components/BikeBooking";
 import TotoBooking from "./components/TotoBooking";
 import DeliveryBooking from "./components/DeliveryBooking";
+import PassPurchase from "./components/PassPurchase";
+import RidePayment from "./components/RidePayment";
 import { Button } from "./components/ui/button";
 import { Toaster } from "./components/ui/toaster";
 
-const Home = () => {
-  const [currentScreen, setCurrentScreen] = useState('home'); // home, booking, options, tracking
+const Home = ({ user }) => {
+  const [currentScreen, setCurrentScreen] = useState('home'); // home, booking, options, tracking, passPurchase, ridePayment
   const [bookingDetails, setBookingDetails] = useState(null);
   const [selectedRide, setSelectedRide] = useState(null);
+  const [completedRideDetails, setCompletedRideDetails] = useState(null);
 
   const handleBookRide = (details) => {
     setBookingDetails(details);
@@ -34,13 +37,9 @@ const Home = () => {
     setCurrentScreen('home');
   };
 
-  const handleRideComplete = () => {
-    // Reset to home screen after ride completion
-    setTimeout(() => {
-      setCurrentScreen('home');
-      setBookingDetails(null);
-      setSelectedRide(null);
-    }, 3000);
+  const handleRideComplete = (rideDetails) => {
+    setCompletedRideDetails(rideDetails);
+    setCurrentScreen('ridePayment');
   };
 
   return (
@@ -134,6 +133,11 @@ const Home = () => {
                 <div className="text-2xl mb-2">🏪</div>
                 <span className="text-sm font-medium text-center">Store pick-up</span>
               </div>
+              <div className="bg-gray-100 rounded-2xl p-4 aspect-square flex flex-col items-center justify-center cursor-pointer"
+                   onClick={() => setCurrentScreen('passPurchase')}>
+                <div className="text-2xl mb-2">🎫</div>
+                <span className="text-sm font-medium text-center">Passes</span>
+              </div>
             </div>
 
             {/* Promotional Banner */}
@@ -209,6 +213,29 @@ const Home = () => {
       {currentScreen === 'delivery' && (
         <DeliveryBooking onBack={() => setCurrentScreen('home')} />
       )}
+      {currentScreen === 'passPurchase' && (
+        <PassPurchase onBack={() => setCurrentScreen('home')} />
+      )}
+      {currentScreen === 'ridePayment' && (
+        <RidePayment
+          rideDetails={completedRideDetails}
+          onPaymentSuccess={() => {
+            alert('Ride payment successful!');
+            setCurrentScreen('home');
+            setCompletedRideDetails(null);
+            setBookingDetails(null);
+            setSelectedRide(null);
+          }}
+          onPaymentFailure={() => {
+            alert('Ride payment failed. Please try again.');
+            setCurrentScreen('home');
+            setCompletedRideDetails(null);
+            setBookingDetails(null);
+            setSelectedRide(null);
+          }}
+          onBack={() => setCurrentScreen('home')}
+        />
+      )}
       {currentScreen === 'rentals' && (
         <div className="p-8 text-center">
           <h2 className="text-2xl font-bold mb-4">🚙 Car Rentals</h2>
@@ -237,15 +264,28 @@ const Home = () => {
 };
 
 function App() {
+  const [user, setUser] = useState(null); // Simulate user login state
+
+  useEffect(() => {
+    // Simulate a logged-in user for demonstration
+    const loggedInUser = { name: "John Doe", email: "john.doe@example.com" };
+    setUser(loggedInUser);
+  }, []);
+
+  const handleLogout = () => {
+    setUser(null);
+    alert('Logged out successfully!');
+  };
+
   return (
     <div className="App">
       <BrowserRouter>
+        <Header user={user} onLogout={handleLogout} />
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
+          <Route path="/" element={<Home user={user} />} />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </div>
   );
 }
