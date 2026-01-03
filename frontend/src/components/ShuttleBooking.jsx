@@ -4,6 +4,9 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
 import { mockShuttleTimeSlots } from '../data/mock';
+import { useAuth } from '../context/AuthContext';
+import axiosInstance from '../lib/axiosInstance';
+import safeParseJson from '../utils/safeParseJson';
 
 const ShuttleBooking = ({ onBack }) => {
   const [selectedRoute, setSelectedRoute] = useState(null);
@@ -15,18 +18,15 @@ const ShuttleBooking = ({ onBack }) => {
   const [shuttleRoutes, setShuttleRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [bookingData, setBookingData] = useState(null);
-  const [userToken, setUserToken] = useState(null);
+
+  const { login, getAccessToken } = useAuth();
 
   // Fetch shuttle routes and user token on component mount
   useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('user_token') || localStorage.getItem('passenger_token');
-    setUserToken(token);
-
     const fetchRoutes = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/shuttles/routes`);
-        const data = await response.json();
+        const data = await safeParseJson(response) || {};
         if (data.success) {
           setShuttleRoutes(data.data);
         }
@@ -56,70 +56,81 @@ const ShuttleBooking = ({ onBack }) => {
   };
 
   const handleConfirmBooking = async () => {
+    console.log('🎫 Starting booking process...');
     setLoading(true);
-    
+    setBookingStep('confirm'); // Show processing screen
+
+    const ensureLogin = async () => {
+      let token = getAccessToken();
+      if (token) return token;
+
+      // Demo auto-login for dev (approved)
+      console.log('🔐 No token found, performing demo login');
+      const loginResult = await login('passenger@gmail.com', 'Pass@123');
+      const tokenFromLogin = loginResult?.access_token || loginResult?.accessToken || loginResult?.token;
+      if (!tokenFromLogin) throw new Error('Demo login did not return a token');
+      return tokenFromLogin;
+    };
+
     try {
-      // Check if user is logged in
-      if (!userToken) {
-        // Auto-login as passenger for demo
-        const loginResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: 'passenger@gmail.com',
-            password: 'Pass@123'
-          })
-        });
-        
-        const loginData = await loginResponse.json();
-        
-        if (loginData.access_token) {
-          localStorage.setItem('passenger_token', loginData.access_token);
-          setUserToken(loginData.access_token);
+      if (!selectedTimeSlot) throw new Error('Please select a time slot');
+
+      const selectedDayData = getNextSevenDays().find(d => d.id === selectedDate);
+      if (!selectedDayData) throw new Error('Invalid date selection');
+
+      await ensureLogin(); // axiosInstance attaches token automatically from localStorage
+
+      const journeyDate = new Date(selectedDayData.date);
+      const [hours, minutes] = selectedTimeSlot.time.split(':');
+      journeyDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+
+      const bookingPayload = {
+        pickup_location: selectedPickup?.name,
+        dropoff_location: selectedDrop?.name,
+        journey_date: journeyDate.toISOString(),
+        shuttle_id: selectedRoute?.shuttle_id || null,
+        route_id: selectedRoute?.id,
+        pass_id: null
+      };
+
+      console.log('📤 Sending booking request via axiosInstance', bookingPayload);
+
+      let response;
+      try {
+        response = await axiosInstance.post('/api/bookings/create', bookingPayload);
+      } catch (err) {
+        // Axios error
+        const status = err?.response?.status;
+        const errData = err?.response?.data;
+        console.error('Booking request error', status, errData || err.message);
+        if (status === 401) {
+          // If interceptor/refresh didn't fix it, try demo login once and retry
+          console.warn('🔁 Received 401; attempting demo login and retry');
+          await ensureLogin();
+          response = await axiosInstance.post('/api/bookings/create', bookingPayload);
         } else {
-          alert('Please login to book a shuttle');
-          setLoading(false);
-          return;
+          throw err;
         }
       }
 
-      // Calculate journey date
-      const selectedDayData = getNextSevenDays().find(d => d.id === selectedDate);
-      const journeyDate = new Date(selectedDayData.date);
-      const [hours, minutes] = selectedTimeSlot.time.split(':');
-      journeyDate.setHours(parseInt(hours), parseInt(minutes), 0);
+      const data = response?.data;
+      console.log('📥 Booking response data:', data);
 
-      // Create booking
-      const token = userToken || localStorage.getItem('passenger_token');
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/bookings/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          pickup_location: selectedPickup.name,
-          dropoff_location: selectedDrop.name,
-          journey_date: journeyDate.toISOString(),
-          shuttle_id: selectedRoute.shuttle_id,
-          route_id: selectedRoute.id,
-          pass_id: null // Can be updated to use pass if available
-        })
-      });
-
-      const data = await response.json();
-      
-      if (data.success && data.booking) {
-        setBookingData(data.booking);
+      if (response.status >= 200 && response.status < 300 && (data?.success || data?.booking)) {
+        const booking = data.booking || data;
+        console.log('✅ Booking successful!', booking);
+        setBookingData(booking);
         setBookingStep('ticket');
       } else {
-        alert('Booking failed: ' + (data.detail || 'Please try again'));
+        const msg = data?.detail || data?.message || `Booking failed (${response.status})`;
+        console.error('❌ Booking failed:', msg, data);
+        alert('Booking failed: ' + msg);
+        setBookingStep('time');
       }
-    } catch (error) {
-      console.error('Booking error:', error);
-      alert('Booking failed. Please try again.');
+    } catch (err) {
+      console.error('❌ Booking error:', err);
+      alert('Booking failed: ' + (err.message || 'unknown error'));
+      setBookingStep('time');
     } finally {
       setLoading(false);
     }
@@ -224,15 +235,15 @@ const ShuttleBooking = ({ onBack }) => {
         </div>
 
         <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-          <div className="font-semibold text-gray-900">{selectedRoute.name}</div>
-          <div className="text-sm text-gray-600">₹{selectedRoute.price} • {selectedRoute.duration_min}-{selectedRoute.duration_max} min</div>
+          <div className="font-semibold text-gray-900">{selectedRoute?.name}</div>
+          <div className="text-sm text-gray-600">₹{selectedRoute?.price} • {selectedRoute?.duration_min}-{selectedRoute?.duration_max} min</div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h3 className="font-semibold mb-3 text-green-600">📍 Pickup Points</h3>
             <div className="space-y-3">
-              {(selectedRoute.pickup_hotspots || []).map((pickup) => (
+              {(selectedRoute?.pickup_hotspots || []).map((pickup) => (
                 <div key={pickup.id} 
                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                        selectedPickup?.id === pickup.id ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'
@@ -249,7 +260,7 @@ const ShuttleBooking = ({ onBack }) => {
           <div>
             <h3 className="font-semibold mb-3 text-red-600">📍 Drop Points</h3>
             <div className="space-y-3">
-              {(selectedRoute.drop_hotspots || []).map((drop) => (
+              {(selectedRoute?.drop_hotspots || []).map((drop) => (
                 <div key={drop.id}
                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                        selectedDrop?.id === drop.id ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
@@ -292,11 +303,11 @@ const ShuttleBooking = ({ onBack }) => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-600">From:</span>
-              <div className="font-medium">{selectedPickup.name}</div>
+              <div className="font-medium">{selectedPickup?.name}</div>
             </div>
             <div>
               <span className="text-gray-600">To:</span>
-              <div className="font-medium">{selectedDrop.name}</div>
+              <div className="font-medium">{selectedDrop?.name}</div>
             </div>
           </div>
         </div>
@@ -360,7 +371,7 @@ const ShuttleBooking = ({ onBack }) => {
               disabled={loading}
               className="w-full bg-black text-white hover:bg-gray-800 disabled:bg-gray-400"
             >
-              {loading ? 'Creating booking...' : `Confirm booking for ₹${selectedRoute.price}`}
+              {loading ? 'Creating booking...' : `Confirm booking for ₹${selectedRoute?.price}`}
             </Button>
           </div>
         )}
@@ -430,23 +441,23 @@ const ShuttleBooking = ({ onBack }) => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-600">Route:</span>
-              <div className="font-medium text-gray-900">{selectedRoute.name}</div>
+              <div className="font-medium text-gray-900">{selectedRoute?.name}</div>
             </div>
             <div>
               <span className="text-gray-600">Time:</span>
-              <div className="font-medium text-gray-900">{selectedTimeSlot.time}</div>
+              <div className="font-medium text-gray-900">{selectedTimeSlot?.time}</div>
             </div>
             <div>
               <span className="text-gray-600">From:</span>
-              <div className="font-medium text-gray-900">{selectedPickup.name}</div>
+              <div className="font-medium text-gray-900">{selectedPickup?.name}</div>
             </div>
             <div>
               <span className="text-gray-600">To:</span>
-              <div className="font-medium text-gray-900">{selectedDrop.name}</div>
+              <div className="font-medium text-gray-900">{selectedDrop?.name}</div>
             </div>
             <div>
               <span className="text-gray-600">Booking ID:</span>
-              <div className="font-medium text-gray-900 text-xs">{bookingData.id.substring(0, 12)}...</div>
+              <div className="font-medium text-gray-900 text-xs">{bookingData.id?.substring(0, 12)}...</div>
             </div>
             <div>
               <span className="text-gray-600">Status:</span>
