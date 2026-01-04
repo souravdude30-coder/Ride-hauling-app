@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from services.osm_service import osm_service
+from database import db
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,10 +15,43 @@ async def search_locations(
     limit: int = Query(10, description="Maximum number of results")
 ):
     """
-    Search for locations using OpenStreetMap Nominatim
+    Search for locations using database and OpenStreetMap Nominatim
     """
     try:
-        locations = await osm_service.search_locations(q, lat, lon, limit)
+        # First, search in our popular_locations database
+        search_regex = {"$regex": q, "$options": "i"}
+        db_locations = await db.popular_locations.find({
+            "$or": [
+                {"name": search_regex},
+                {"address": search_regex},
+                {"city": search_regex}
+            ]
+        }).limit(limit).to_list(limit)
+        
+        # Convert to response format
+        locations = []
+        for loc in db_locations:
+            locations.append({
+                "id": loc.get("id", str(loc.get("_id"))),
+                "name": loc.get("name"),
+                "address": loc.get("address"),
+                "lat": loc.get("lat"),
+                "lon": loc.get("lon"),
+                "type": loc.get("type", "popular"),
+                "city": loc.get("city", ""),
+                "source": "database"
+            })
+        
+        # If not enough results from database, try OSM
+        if len(locations) < limit:
+            try:
+                osm_locations = await osm_service.search_locations(q, lat, lon, limit - len(locations))
+                for osm_loc in osm_locations:
+                    osm_loc["source"] = "osm"
+                    locations.append(osm_loc)
+            except Exception as osm_error:
+                logger.warning(f"OSM search failed, using only database results: {osm_error}")
+        
         return {
             "success": True,
             "data": locations,
@@ -26,6 +60,45 @@ async def search_locations(
     except Exception as e:
         logger.error(f"Location search error: {e}")
         raise HTTPException(status_code=500, detail="Location search failed")
+
+@router.get("/popular")
+async def get_popular_locations(
+    city: Optional[str] = Query(None, description="Filter by city"),
+    type: Optional[str] = Query(None, description="Filter by location type"),
+    limit: int = Query(20, description="Maximum number of results")
+):
+    """
+    Get popular/suggested locations from database
+    """
+    try:
+        query = {}
+        if city:
+            query["city"] = {"$regex": city, "$options": "i"}
+        if type:
+            query["type"] = type
+            
+        locations = await db.popular_locations.find(query).limit(limit).to_list(limit)
+        
+        result = []
+        for loc in locations:
+            result.append({
+                "id": loc.get("id", str(loc.get("_id"))),
+                "name": loc.get("name"),
+                "address": loc.get("address"),
+                "lat": loc.get("lat"),
+                "lon": loc.get("lon"),
+                "type": loc.get("type", "popular"),
+                "city": loc.get("city", "")
+            })
+        
+        return {
+            "success": True,
+            "data": result,
+            "count": len(result)
+        }
+    except Exception as e:
+        logger.error(f"Popular locations error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch popular locations")
 
 @router.get("/geocode")
 async def geocode_address(
