@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import './index.css';
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import UserManagement from './components/UserManagement';
@@ -10,18 +10,119 @@ import AuditLogs from './components/AuditLogs';
 import SystemSettings from './components/SystemSettings';
 import { Toaster } from './components/ui/toaster';
 import { useAuth } from './hooks/useAuth';
+import { Shield, LayoutDashboard, Users, Building2, Truck, FileText, Settings, LogOut, Bell } from 'lucide-react';
+import { Button } from './components/ui/button';
+import { Badge } from './components/ui/badge';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
+const Sidebar = ({ user, logout }) => {
+  const location = useLocation();
+  
+  const navItems = [
+    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/users', icon: Users, label: 'User Management' },
+    { path: '/companies', icon: Building2, label: 'Companies' },
+    { path: '/fleet', icon: Truck, label: 'Fleet Overview' },
+    { path: '/audit', icon: FileText, label: 'Audit Logs' },
+    { path: '/settings', icon: Settings, label: 'System Settings' },
+  ];
+
+  return (
+    <div className="w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white min-h-screen flex flex-col">
+      <div className="p-6 border-b border-gray-700">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            <Shield className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold">Master Admin</h1>
+            <p className="text-xs text-gray-400">System Control Panel</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav className="flex-1 py-4">
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`flex items-center space-x-3 px-6 py-3 transition-colors ${
+              location.pathname === item.path
+                ? 'bg-blue-600 border-l-4 border-blue-300'
+                : 'hover:bg-gray-700'
+            }`}
+          >
+            <item.icon className="w-5 h-5" />
+            <span className="text-sm font-medium">{item.label}</span>
+          </Link>
+        ))}
+      </nav>
+
+      {/* System Status Card */}
+      <div className="mx-4 mb-4 p-4 bg-gray-700/50 rounded-lg">
+        <div className="text-xs text-gray-400 mb-2">System Status</div>
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-sm">All Systems Operational</span>
+        </div>
+      </div>
+
+      {/* User Section */}
+      <div className="p-4 border-t border-gray-700">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+            {user?.name?.[0] || 'A'}
+          </div>
+          <div className="flex-1">
+            <div className="text-sm font-medium">{user?.name}</div>
+            <div className="text-xs text-gray-400">{user?.role}</div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={logout}
+            className="text-gray-400 hover:text-white hover:bg-gray-700"
+          >
+            <LogOut className="w-5 h-5" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Header = ({ user }) => {
+  return (
+    <header className="bg-white border-b px-6 py-4 flex items-center justify-between">
+      <div>
+        <h2 className="text-xl font-semibold">Welcome back, {user?.name?.split(' ')[0] || 'Admin'}!</h2>
+        <p className="text-sm text-gray-500">Full system control and administration</p>
+      </div>
+      <div className="flex items-center space-x-4">
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell className="w-5 h-5" />
+          <Badge className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center p-0 text-xs bg-red-500">
+            5
+          </Badge>
+        </Button>
+        <Badge className="bg-blue-100 text-blue-700">
+          {user?.role?.replace('_', ' ')}
+        </Badge>
+      </div>
+    </header>
+  );
+};
+
 function App() {
-  const { user, login, logout, loading } = useAuth();
+  const { user, login, logout, loading, getAuthHeaders } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="text-2xl font-bold mb-2">Master Admin Portal</div>
-          <div className="text-gray-600">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
+        <div className="text-center text-white">
+          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg">Loading Master Admin...</p>
         </div>
       </div>
     );
@@ -45,15 +146,13 @@ function App() {
   if (user.role !== 'master_admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
+        <div className="text-center p-8 bg-white rounded-lg shadow-lg">
           <div className="text-red-600 text-xl font-bold mb-2">Access Denied</div>
-          <div className="text-gray-600 mb-4">You don't have permission to access Master Admin Portal</div>
-          <button 
-            onClick={logout}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
+          <p className="text-gray-600 mb-4">You don't have permission to access Master Admin Portal</p>
+          <p className="text-sm text-gray-500 mb-4">Current role: {user.role}</p>
+          <Button onClick={logout} className="bg-blue-600 hover:bg-blue-700">
             Logout
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -63,65 +162,21 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <BrowserRouter>
         <div className="flex">
-          {/* Sidebar */}
-          <div className="w-64 bg-gray-900 text-white min-h-screen">
-            <div className="p-6">
-              <h1 className="text-xl font-bold">Master Admin</h1>
-              <p className="text-gray-400 text-sm">System Control Panel</p>
-            </div>
-            
-            <nav className="mt-6">
-              <a href="/dashboard" className="block px-6 py-3 hover:bg-gray-800 border-l-4 border-blue-500">
-                📊 Dashboard
-              </a>
-              <a href="/users" className="block px-6 py-3 hover:bg-gray-800">
-                👥 User Management
-              </a>
-              <a href="/companies" className="block px-6 py-3 hover:bg-gray-800">
-                🏢 Companies
-              </a>
-              <a href="/fleet" className="block px-6 py-3 hover:bg-gray-800">
-                🚐 Fleet Overview
-              </a>
-              <a href="/audit" className="block px-6 py-3 hover:bg-gray-800">
-                📋 Audit Logs
-              </a>
-              <a href="/settings" className="block px-6 py-3 hover:bg-gray-800">
-                ⚙️ System Settings
-              </a>
-            </nav>
-
-            <div className="absolute bottom-0 w-64 p-6 border-t border-gray-800">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  {user.name[0]}
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{user.name}</div>
-                  <div className="text-xs text-gray-400">{user.role}</div>
-                </div>
-                <button 
-                  onClick={logout}
-                  className="text-gray-400 hover:text-white"
-                  title="Logout"
-                >
-                  🚪
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard user={user} />} />
-              <Route path="/users" element={<UserManagement user={user} />} />
-              <Route path="/companies" element={<CompanyManagement user={user} />} />
-              <Route path="/fleet" element={<FleetOverview user={user} />} />
-              <Route path="/audit" element={<AuditLogs user={user} />} />
-              <Route path="/settings" element={<SystemSettings user={user} />} />
-            </Routes>
+          <Sidebar user={user} logout={logout} />
+          <div className="flex-1 flex flex-col">
+            <Header user={user} />
+            <main className="flex-1 overflow-auto">
+              <Routes>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Dashboard user={user} getAuthHeaders={getAuthHeaders} />} />
+                <Route path="/users" element={<UserManagement user={user} getAuthHeaders={getAuthHeaders} />} />
+                <Route path="/companies" element={<CompanyManagement user={user} getAuthHeaders={getAuthHeaders} />} />
+                <Route path="/fleet" element={<FleetOverview user={user} getAuthHeaders={getAuthHeaders} />} />
+                <Route path="/audit" element={<AuditLogs user={user} getAuthHeaders={getAuthHeaders} />} />
+                <Route path="/settings" element={<SystemSettings user={user} getAuthHeaders={getAuthHeaders} />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </main>
           </div>
         </div>
       </BrowserRouter>
