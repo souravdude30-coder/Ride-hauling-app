@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
+import { Shield, Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Alert, AlertDescription } from './ui/alert';
 
-function Login({ onLogin }) {
+const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,78 +21,89 @@ function Login({ onLogin }) {
     const result = await onLogin(email, password);
     
     if (!result.success) {
-      setError(result.error || 'Login failed');
+      setError(result.error);
     }
+    
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Master Admin Portal</h2>
-          <p className="text-gray-600">Sign in to manage the platform</p>
-        </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none block w-full px-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="admin@metrohail.com"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none block w-full px-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your password"
-              />
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardHeader className="text-center space-y-2">
+          <div className="flex justify-center">
+            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+              <Shield className="w-8 h-8 text-white" />
             </div>
           </div>
-
-          <div>
-            <button
-              type="submit"
+          <CardTitle className="text-2xl font-bold">Master Admin</CardTitle>
+          <CardDescription>Sign in to access the system control panel</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@metrohail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-blue-600 hover:bg-blue-700"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors"
             >
               {loading ? 'Signing in...' : 'Sign In'}
-            </button>
+            </Button>
+          </form>
+          
+          <div className="mt-6 text-center text-sm text-gray-500">
+            <p>Test credentials:</p>
+            <p className="font-mono text-xs mt-1">admin@metrohail.com / Admin@123</p>
           </div>
-
-          <div className="text-center text-sm text-gray-600 mt-4">
-            <p>Test Credentials:</p>
-            <p className="text-xs mt-1">admin@metrohail.com / Admin@123</p>
-          </div>
-        </form>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
 
 export default Login;
