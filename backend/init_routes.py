@@ -7,6 +7,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import uuid
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 async def init_shuttle_routes():
     """Initialize shuttle routes in the database"""
