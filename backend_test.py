@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Payment Gateway, Subscription Plans, and Booking System Test Suite
-Tests payment gateway, subscription plans, and booking system functionality
+Backend RBAC Authentication System Test Suite
+Tests RBAC authentication for all user roles and permissions
 """
 
 import asyncio
